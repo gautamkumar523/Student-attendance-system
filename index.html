@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — AttendTrack</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <!-- Sidebar nav is auto-injected by common.js -->
+  <div class="page">
+    <h1 class="page-title">
+      Dashboard <small id="dashboard-greeting">— Good evening</small>
+    </h1>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card__value" id="stat-total-students">0</div>
+        <div class="stat-card__label">Total Students</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__value" id="stat-total-subjects">0</div>
+        <div class="stat-card__label">Total Subjects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__value" id="stat-today-attendance">0%</div>
+        <div class="stat-card__label">Today's Attendance</div>
+      </div>
+      <div class="stat-card stat-card--danger">
+        <div class="stat-card__value" id="stat-below-threshold">0</div>
+        <div class="stat-card__label">Students Below Threshold</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions" style="margin-bottom: 1.5rem;">
+      <a href="add-student.html" class="quick-action">
+        <span class="quick-action__icon">➕</span>
+        <span class="quick-action__label">Add Student</span>
+      </a>
+      <a href="attendance.html" class="quick-action">
+        <span class="quick-action__icon">✅</span>
+        <span class="quick-action__label">Mark Attendance</span>
+      </a>
+      <a href="students.html" class="quick-action">
+        <span class="quick-action__icon">👥</span>
+        <span class="quick-action__label">View Students</span>
+      </a>
+      <a href="records.html" class="quick-action">
+        <span class="quick-action__icon">📊</span>
+        <span class="quick-action__label">View Records</span>
+      </a>
+      <a href="settings.html" class="quick-action">
+        <span class="quick-action__icon">⚙️</span>
+        <span class="quick-action__label">Settings</span>
+      </a>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__title">Recent Activity</h2>
+      </div>
+      <ul class="activity-feed" id="activity-feed"></ul>
+    </div>
+
+    <!-- Subject-wise Attendance -->
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__title">Subject-wise Attendance</h2>
+      </div>
+      <div class="bar-chart" id="subject-bar-chart"></div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Students — AttendTrack</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <!-- Sidebar nav is auto-injected by common.js -->
+  <div class="page">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+      <h1 class="page-title" style="margin-bottom: 0;">
+        Student Directory <small id="student-count">(0 students)</small>
+      </h1>
+      <a href="add-student.html" class="btn btn--primary">➕ Add Student</a>
+    </div>
+
+    <div class="card">
+      <div class="card__header">
+        <div style="flex: 1; min-width: 220px; max-width: 380px;">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search by name, roll no, course..."
+            autocomplete="off"
+            aria-label="Search students"
+          />
+        </div>
+        <div class="view-toggle">
+          <button type="button" id="btn-table" class="active" title="Table view">☰ Table</button>
+          <button type="button" id="btn-cards" title="Cards view">▦ Cards</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="form-group">
+          <label for="filter-course" class="form-label">Course</label>
+          <select id="filter-course">
+            <option value="">All Courses</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="filter-department" class="form-label">Department</label>
+          <select id="filter-department">
+            <option value="">All Departments</option>
+          </select>
+        </div>
+        <button type="button" id="btn-clear-filters" class="btn btn--outline btn--small">Clear Filters</button>
+      </div>
+
+      <!-- Table View Container -->
+      <div id="table-view">
+        <div class="table-wrapper">
+          <table id="students-table">
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="rollNo" title="Sort by Roll No">Roll No <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="name" title="Sort by Name">Name <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="course" title="Sort by Course">Course <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="dept" title="Sort by Department">Dept <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="pct" title="Sort by Attendance %">Attendance % <span class="sort-icon">↕</span></th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cards View Container (hidden by default) -->
+      <div id="cards-view" style="display: none;">
+        <div class="student-cards" id="cards-container"></div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="table-empty" style="display: none;">
+        <p style="font-size: 2.2rem; margin-bottom: 0.5rem;">👥</p>
+        <p style="font-weight: 700; font-size: 1.1rem;" id="empty-state-title">No students found</p>
+        <p style="font-size: 0.88rem; color: var(--clr-text-muted);" id="empty-state-desc">Try adjusting your search or filters.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/students.js"></script>
+</body>
+</html>

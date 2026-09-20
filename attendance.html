@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mark Attendance — AttendTrack</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <!-- Sidebar nav is auto-injected by common.js -->
+  <div class="page">
+    <h1 class="page-title">Mark Attendance</h1>
+
+    <!-- Configuration Warning Banner (shown if subjects, teachers, or classes are missing) -->
+    <div id="config-warning" class="card" style="display: none; margin-bottom: 1.5rem; background: var(--clr-warning-light); border-left: 4px solid var(--clr-warning);">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <strong style="color: #856404; font-size: 0.95rem;">⚠️ Setup Required:</strong>
+          <span id="config-warning-text" style="color: #856404; font-size: 0.9rem; margin-left: 0.35rem;">
+            Please configure subjects, teachers, and classes in Settings before marking attendance.
+          </span>
+        </div>
+        <a href="settings.html" class="btn btn--warning btn--small">Go to Settings →</a>
+      </div>
+    </div>
+
+    <!-- Selection Controls Card -->
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__title">Attendance Session</h2>
+      </div>
+      <div class="filter-bar">
+        <div class="form-group">
+          <label class="form-label" for="att-date">Date <span class="required" style="color: var(--clr-danger);">*</span></label>
+          <input type="date" id="att-date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="att-subject">Subject <span class="required" style="color: var(--clr-danger);">*</span></label>
+          <select id="att-subject">
+            <option value="">Select Subject</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="att-teacher">Teacher <span class="required" style="color: var(--clr-danger);">*</span></label>
+          <select id="att-teacher">
+            <option value="">Select Teacher</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="att-class">Class <span class="required" style="color: var(--clr-danger);">*</span></label>
+          <select id="att-class">
+            <option value="">Select Class</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance Sheet Card -->
+    <div class="card" id="attendance-card">
+      <div class="card__header">
+        <div>
+          <h2 class="card__title">Student List</h2>
+          <div id="attendance-info-badge" style="font-size: 0.85rem; color: var(--clr-text-muted); margin-top: 0.25rem;"></div>
+        </div>
+        <div class="btn-row" id="bulk-actions-row" style="margin-top: 0;">
+          <button type="button" class="btn btn--success btn--small" id="btn-all-present">Mark All Present</button>
+          <button type="button" class="btn btn--danger btn--small" id="btn-all-absent">Mark All Absent</button>
+          <button type="button" class="btn btn--warning btn--small" id="btn-all-late">Mark All Late</button>
+          <button type="button" class="btn btn--outline btn--small" id="btn-all-leave">Mark All Leave</button>
+        </div>
+      </div>
+
+      <!-- Live summary statistics -->
+      <div id="summary-bar" style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; padding: 0.6rem 0.85rem; background: var(--clr-bg); border-radius: var(--radius-sm);">
+        <span style="font-size: 0.82rem; font-weight: 600; color: var(--clr-text-muted);">Live Counts:</span>
+        <span class="status-pill status-pill--present" id="stat-present">Present: 0</span>
+        <span class="status-pill status-pill--absent" id="stat-absent">Absent: 0</span>
+        <span class="status-pill status-pill--late" id="stat-late">Late: 0</span>
+        <span class="status-pill status-pill--leave" id="stat-leave">Leave: 0</span>
+        <span style="margin-left: auto; font-size: 0.82rem; font-weight: 700; color: var(--clr-text);" id="stat-total">Total Students: 0</span>
+      </div>
+
+      <!-- Table Wrapper -->
+      <div class="table-wrapper" id="table-wrapper">
+        <table id="attendance-table">
+          <thead>
+            <tr>
+              <th style="width: 15%;">Roll No</th>
+              <th style="width: 35%;">Name</th>
+              <th style="width: 25%;">Status</th>
+              <th style="width: 25%;">Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="attendance-body">
+            <!-- Populated dynamically by attendance.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="table-empty" style="display: none;">
+        <p id="empty-state-msg" style="margin-bottom: 0.75rem;">No students found.</p>
+        <div id="empty-state-actions"></div>
+      </div>
+
+      <!-- Bottom Save Action Row -->
+      <div class="btn-row" id="save-row" style="margin-top: 1.5rem; justify-content: flex-end;">
+        <button type="button" class="btn btn--success" id="btn-save">
+          Save Attendance
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>

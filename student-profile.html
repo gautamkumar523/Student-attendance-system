@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Profile — AttendTrack</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <style>
+    .info-group {
+      margin-bottom: 1.75rem;
+    }
+    .info-group:last-child {
+      margin-bottom: 0;
+    }
+    .info-group__title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--clr-primary);
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 2px solid var(--clr-primary-light);
+    }
+    .info-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--clr-text);
+      word-break: break-word;
+      padding-top: 0.15rem;
+    }
+    .profile-actions {
+      margin-left: auto;
+      align-self: center;
+    }
+    @media (max-width: 768px) {
+      .profile-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar nav is auto-injected by common.js -->
+  <div class="page">
+    <!-- Student Not Found State -->
+    <div id="student-not-found" class="card" style="display: none; text-align: center; padding: 3rem 1.5rem; margin-top: 1rem;">
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">🔍</div>
+      <h2 class="card__title" style="font-size: 1.5rem; margin-bottom: 0.5rem;" id="error-title">Student Not Found</h2>
+      <p style="color: var(--clr-text-muted); max-width: 450px; margin: 0 auto 1.5rem;" id="error-message">
+        The student you are looking for does not exist or has been removed.
+      </p>
+      <a href="students.html" class="btn btn--primary">← Back to Directory</a>
+    </div>
+
+    <!-- Student Profile Content -->
+    <div id="student-profile-content">
+      <!-- Profile Header Card -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="profile-header" style="padding: 0;">
+          <img class="profile-avatar" id="profile-photo" src="assets/default-avatar.svg" alt="Student Photo" />
+          <div class="profile-info">
+            <h2 id="profile-name">—</h2>
+            <p id="profile-id">Roll No: —</p>
+            <p id="profile-course">—</p>
+            <span class="pct-badge" id="profile-pct">—</span>
+          </div>
+          <div class="btn-row profile-actions">
+            <a href="#" class="btn btn--primary" id="btn-edit-profile">✏️ Edit Profile</a>
+            <a href="students.html" class="btn btn--outline" id="btn-back-directory">← Back to Directory</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Tabs Card -->
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button class="tab-btn tab-btn--active" data-tab="tab-personal" type="button" role="tab" aria-selected="true" aria-controls="tab-personal">Personal Info</button>
+          <button class="tab-btn" data-tab="tab-summary" type="button" role="tab" aria-selected="false" aria-controls="tab-summary">Attendance Summary</button>
+          <button class="tab-btn" data-tab="tab-history" type="button" role="tab" aria-selected="false" aria-controls="tab-history">Attendance History</button>
+        </div>
+
+        <!-- Tab 1: Personal Info -->
+        <div class="tab-panel tab-panel--active" id="tab-personal" role="tabpanel">
+          <div id="personal-info-container">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Attendance Summary -->
+        <div class="tab-panel" id="tab-summary" role="tabpanel">
+          <!-- Overall Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--success" style="border: 1px solid var(--clr-border);">
+              <div class="stat-card__value" id="stat-present">0</div>
+              <div class="stat-card__label">Present</div>
+            </div>
+            <div class="stat-card stat-card--danger" style="border: 1px solid var(--clr-border);">
+              <div class="stat-card__value" id="stat-absent">0</div>
+              <div class="stat-card__label">Absent</div>
+            </div>
+            <div class="stat-card stat-card--warning" style="border: 1px solid var(--clr-border);">
+              <div class="stat-card__value" id="stat-late">0</div>
+              <div class="stat-card__label">Late</div>
+            </div>
+            <div class="stat-card" style="border: 1px solid var(--clr-border);">
+              <div class="stat-card__value" id="stat-leave" style="color: var(--clr-leave);">0</div>
+              <div class="stat-card__label">Leave</div>
+            </div>
+            <div class="stat-card" style="border: 1px solid var(--clr-border);">
+              <div class="stat-card__value" id="stat-total">0</div>
+              <div class="stat-card__label">Total Classes</div>
+            </div>
+            <div class="stat-card" id="stat-pct-card" style="border: 1px solid var(--clr-border);">
+              <div class="stat-card__value" id="stat-pct">—</div>
+              <div class="stat-card__label">Overall %</div>
+            </div>
+          </div>
+
+          <!-- Per-subject Breakdown Table -->
+          <div class="card__header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
+            <h3 class="card__title" style="font-size: 1.1rem;">Per-Subject Attendance Breakdown</h3>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subject Name</th>
+                  <th>Present</th>
+                  <th>Absent</th>
+                  <th>Late</th>
+                  <th>Leave</th>
+                  <th>Total</th>
+                  <th>Attendance %</th>
+                </tr>
+              </thead>
+              <tbody id="subject-breakdown-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Attendance History -->
+        <div class="tab-panel" id="tab-history" role="tabpanel">
+          <!-- View Mode Toggle -->
+          <div class="card__header" style="margin-bottom: 1rem;">
+            <h3 class="card__title" style="font-size: 1rem;">View Attendance By</h3>
+            <div class="view-toggle" id="hist-view-toggle">
+              <button type="button" class="active" data-mode="day">📅 Day</button>
+              <button type="button" data-mode="month">📆 Month</button>
+              <button type="button" data-mode="total">📊 Total</button>
+            </div>
+          </div>
+
+          <!-- Day view filter -->
+          <div class="filter-bar" id="hist-day-filter">
+            <div class="form-group">
+              <label for="hist-specific-date" class="form-label">Select Date</label>
+              <input type="date" id="hist-specific-date" />
+            </div>
+            <div class="form-group">
+              <label for="hist-subject-filter" class="form-label">Subject</label>
+              <select id="hist-subject-filter">
+                <option value="">All Subjects</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn--primary" id="hist-filter-btn">Filter</button>
+            <button type="button" class="btn btn--outline" id="hist-reset-btn">Reset</button>
+          </div>
+
+          <!-- Month view filter -->
+          <div class="filter-bar" id="hist-month-filter" style="display: none;">
+            <div class="form-group">
+              <label for="hist-month-picker" class="form-label">Select Month</label>
+              <input type="month" id="hist-month-picker" />
+            </div>
+            <div class="form-group">
+              <label for="hist-month-subject" class="form-label">Subject</label>
+              <select id="hist-month-subject">
+                <option value="">All Subjects</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn--primary" id="hist-month-filter-btn">Filter</button>
+            <button type="button" class="btn btn--outline" id="hist-month-reset-btn">Reset</button>
+          </div>
+
+          <!-- Total view filter (subject only) -->
+          <div class="filter-bar" id="hist-total-filter" style="display: none;">
+            <div class="form-group">
+              <label for="hist-total-subject" class="form-label">Subject</label>
+              <select id="hist-total-subject">
+                <option value="">All Subjects</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn--primary" id="hist-total-filter-btn">Filter</button>
+          </div>
+
+          <!-- Summary stats for current view -->
+          <div id="hist-summary" class="stats-grid" style="margin-bottom: 1rem;"></div>
+
+          <!-- History Table -->
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Subject</th>
+                  <th>Teacher</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="hist-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/student-profile.js"></script>
+</body>
+</html>

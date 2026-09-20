@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Student — AttendTrack</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <!-- Sidebar nav is auto-injected by common.js -->
+  <div class="page">
+    <h1 class="page-title" id="page-heading">Add Student</h1>
+
+    <div class="card">
+      <div class="accordion" id="student-accordion">
+
+        <!-- Panel 1: Basic Details -->
+        <div class="accordion__item accordion__item--open" id="panel-basic">
+          <div class="accordion__header">
+            <span>Basic Details</span>
+            <span class="accordion__chevron">▼</span>
+          </div>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="inp-id">Student ID / Roll Number <span class="required">*</span></label>
+                  <input type="text" id="inp-id" placeholder="e.g. STU101" required />
+                  <span class="error-text" id="err-id" style="display: none;"></span>
+                </div>
+                <div class="form-group">
+                  <label for="inp-name">Full Name <span class="required">*</span></label>
+                  <input type="text" id="inp-name" placeholder="e.g. Jane Doe" required />
+                  <span class="error-text" id="err-name" style="display: none;"></span>
+                </div>
+                <div class="form-group">
+                  <label for="inp-dob">Date of Birth</label>
+                  <input type="date" id="inp-dob" />
+                </div>
+                <div class="form-group">
+                  <span class="form-label">Gender</span>
+                  <div class="radio-group">
+                    <label><input type="radio" name="gender" value="Male" /> Male</label>
+                    <label><input type="radio" name="gender" value="Female" /> Female</label>
+                    <label><input type="radio" name="gender" value="Other" /> Other</label>
+                  </div>
+                </div>
+                <div class="form-group form-group--full">
+                  <label class="form-label" for="inp-photo">Profile Photo</label>
+                  <div class="photo-upload">
+                    <img src="assets/default-avatar.svg" alt="Profile Preview" class="photo-preview" id="photo-preview" />
+                    <input type="file" id="inp-photo" accept="image/*" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Academic Details -->
+        <div class="accordion__item" id="panel-academic">
+          <div class="accordion__header">
+            <span>Academic Details</span>
+            <span class="accordion__chevron">▼</span>
+          </div>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="inp-course">Course / Class</label>
+                  <input type="text" id="inp-course" placeholder="e.g. B.Tech Computer Science" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-semester">Year</label>
+                  <input type="text" id="inp-semester" placeholder="e.g. 2nd Year" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-department">Department</label>
+                  <input type="text" id="inp-department" placeholder="e.g. Computer Science & Engineering" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-batch">Batch / Session</label>
+                  <input type="text" id="inp-batch" placeholder="e.g. 2024–2028" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-admission-no">Admission Number</label>
+                  <input type="text" id="inp-admission-no" placeholder="e.g. ADM-2024-001" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-admission-date">Admission Date</label>
+                  <input type="date" id="inp-admission-date" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Contact Details -->
+        <div class="accordion__item" id="panel-contact">
+          <div class="accordion__header">
+            <span>Contact Details</span>
+            <span class="accordion__chevron">▼</span>
+          </div>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="inp-mobile">Mobile Number</label>
+                  <input type="tel" id="inp-mobile" placeholder="e.g. +1 555 123 4567" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-email">Email</label>
+                  <input type="email" id="inp-email" placeholder="e.g. student@example.com" />
+                </div>
+                <div class="form-group form-group--full">
+                  <label for="inp-address">Address</label>
+                  <textarea id="inp-address" rows="3" placeholder="Residential address"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="inp-city">City</label>
+                  <input type="text" id="inp-city" placeholder="e.g. Springfield" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-state">State</label>
+                  <input type="text" id="inp-state" placeholder="e.g. Illinois" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 4: Parent/Guardian Details -->
+        <div class="accordion__item" id="panel-parent">
+          <div class="accordion__header">
+            <span>Parent/Guardian Details</span>
+            <span class="accordion__chevron">▼</span>
+          </div>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="inp-father">Father's / Guardian's Name</label>
+                  <input type="text" id="inp-father" placeholder="e.g. Robert Doe" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-mother">Mother's Name</label>
+                  <input type="text" id="inp-mother" placeholder="e.g. Sarah Doe" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-parent-mobile">Parent/Guardian Mobile</label>
+                  <input type="tel" id="inp-parent-mobile" placeholder="e.g. +1 555 987 6543" />
+                </div>
+                <div class="form-group">
+                  <label for="inp-parent-email">Parent/Guardian Email</label>
+                  <input type="email" id="inp-parent-email" placeholder="e.g. parent@example.com" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 5: Review & Submit -->
+        <div class="accordion__item" id="panel-review">
+          <div class="accordion__header">
+            <span>Review &amp; Submit</span>
+            <span class="accordion__chevron">▼</span>
+          </div>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <div id="review-summary">
+                <!-- JS will render formatted summary of filled fields -->
+              </div>
+              <div class="btn-row">
+                <button type="button" class="btn btn--success" id="save-btn">Save Student</button>
+                <button type="button" class="btn btn--outline" id="reset-btn">Reset</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/add-student.js"></script>
+</body>
+</html>
