@@ -371,6 +371,35 @@
     }
   }
 
+  // ── Populate Course & Year dropdowns from stored classes ─────────────────────
+  function populateClassDropdowns() {
+    const classes = Store.getClasses() || [];
+    const courses = new Set();
+    const years = new Set();
+    classes.forEach(cls => {
+      if (cls.course) courses.add(cls.course);
+      if (cls.year) years.add(cls.year);
+    });
+
+    // Helper to fill a <select> while keeping the first placeholder option
+    const fillSelect = (selectEl, values) => {
+      if (!selectEl) return;
+      // Remove all options except the first placeholder
+      while (selectEl.options.length > 1) {
+        selectEl.remove(1);
+      }
+      values.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v;
+        opt.textContent = v;
+        selectEl.appendChild(opt);
+      });
+    };
+
+    fillSelect(inpCourse, courses);
+    fillSelect(inpSemester, years);
+  }
+
   // Save handler
   function onSave() {
     if (!validate()) {
@@ -427,6 +456,7 @@
     initAccordion();
     initPhotoUpload();
     initInputListeners();
+    populateClassDropdowns();
 
     if (saveBtn) {
       saveBtn.addEventListener("click", onSave);

@@ -16,7 +16,7 @@
   let btnTable;
   let btnCards;
   let filterCourse;
-  let filterDept;
+  let filterYear;
   let btnClearFilters;
   let tableView;
   let cardsView;
@@ -47,15 +47,15 @@
     return text;
   }
 
-  // ── Populate Filter Dropdowns Dynamically ──────────────────
+  // ── Populate Filter Dropdowns from Settings Classes ─────────
   function populateDropdowns() {
-    const students = Store.getStudents();
+    const classes = Store.getClasses() || [];
 
     const selectedCourse = filterCourse.value;
-    const selectedDept = filterDept.value;
+    const selectedYear = filterYear.value;
 
-    const courses = [...new Set(students.map((s) => s.course).filter(Boolean))].sort();
-    const depts = [...new Set(students.map((s) => s.department || s.dept).filter(Boolean))].sort();
+    const courses = [...new Set(classes.map((c) => c.course).filter(Boolean))].sort();
+    const years = [...new Set(classes.map((c) => c.year).filter(Boolean))].sort();
 
     function populate(selectEl, items, defaultLabel, currentVal) {
       selectEl.innerHTML = `<option value="">${defaultLabel}</option>`;
@@ -71,7 +71,7 @@
     }
 
     populate(filterCourse, courses, "All Courses", selectedCourse);
-    populate(filterDept, depts, "All Departments", selectedDept);
+    populate(filterYear, years, "All Years", selectedYear);
   }
 
   // ── Filter and Sort Students ───────────────────────────────
@@ -79,15 +79,14 @@
     const allStudents = Store.getStudents();
     const query = searchInput.value.trim().toLowerCase();
     const course = filterCourse.value;
-    const dept = filterDept.value;
+    const year = filterYear.value;
 
     // Filter
     const filtered = allStudents.filter((student) => {
       if (course && student.course !== course) {
         return false;
       }
-      const studentDept = student.department || student.dept || "";
-      if (dept && studentDept !== dept) {
+      if (year && (student.year || "") !== year) {
         return false;
       }
 
@@ -95,13 +94,13 @@
         const name = (student.name || "").toLowerCase();
         const roll = getRollNo(student).toString().toLowerCase();
         const stCourse = (student.course || "").toLowerCase();
-        const stDept = studentDept.toLowerCase();
+        const stYear = (student.year || "").toLowerCase();
 
         const matches =
           name.includes(query) ||
           roll.includes(query) ||
           stCourse.includes(query) ||
-          stDept.includes(query);
+          stYear.includes(query);
 
         if (!matches) {
           return false;
@@ -306,7 +305,7 @@
   function clearFilters() {
     searchInput.value = "";
     filterCourse.value = "";
-    filterDept.value = "";
+    filterYear.value = "";
     render();
   }
 
@@ -330,7 +329,7 @@
     btnTable = document.getElementById("btn-table");
     btnCards = document.getElementById("btn-cards");
     filterCourse = document.getElementById("filter-course");
-    filterDept = document.getElementById("filter-department");
+    filterYear = document.getElementById("filter-year");
     btnClearFilters = document.getElementById("btn-clear-filters");
     tableView = document.getElementById("table-view");
     cardsView = document.getElementById("cards-view");
@@ -344,7 +343,7 @@
     // Search and filters
     searchInput.addEventListener("input", render);
     filterCourse.addEventListener("change", render);
-    filterDept.addEventListener("change", render);
+    filterYear.addEventListener("change", render);
     btnClearFilters.addEventListener("click", clearFilters);
 
     // View toggle

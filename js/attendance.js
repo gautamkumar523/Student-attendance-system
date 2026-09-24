@@ -122,19 +122,19 @@
       return allStudents;
     }
 
-    // If class has course and student has course, match by course
-    if (cls.course) {
-      const targetCourse = cls.course.trim().toLowerCase();
-      const hasStudentsWithCourse = allStudents.some((s) => !!s.course);
+    const targetCourse = (cls.course || "").trim().toLowerCase();
+    const targetYear = (cls.year || "").trim().toLowerCase();
 
-      if (hasStudentsWithCourse) {
-        return allStudents.filter(
-          (s) => s.course && s.course.trim().toLowerCase() === targetCourse
-        );
-      }
-    }
+    // Filter students matching BOTH course and year
+    return allStudents.filter((s) => {
+      const sCourse = (s.course || "").trim().toLowerCase();
+      const sYear = (s.year || "").trim().toLowerCase();
 
-    return allStudents;
+      const courseMatch = !targetCourse || sCourse === targetCourse;
+      const yearMatch = !targetYear || sYear === targetYear;
+
+      return courseMatch && yearMatch;
+    });
   }
 
   // ── Load Existing Attendance for Date ───────────────────────
