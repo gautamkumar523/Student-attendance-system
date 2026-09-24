@@ -29,7 +29,6 @@
    */
   function renderStats() {
     const students = Store.getStudents() || [];
-    const subjects = Store.getSubjects() || [];
     const threshold = Store.getThreshold();
 
     // 1. Total Students
@@ -38,13 +37,7 @@
       totalStudentsEl.textContent = students.length;
     }
 
-    // 2. Total Subjects
-    const totalSubjectsEl = document.getElementById("stat-total-subjects");
-    if (totalSubjectsEl) {
-      totalSubjectsEl.textContent = subjects.length;
-    }
-
-    // 3. Today's Attendance %
+    // 2. Today's Attendance %
     // Formula: (present + late entries today) / (total entries today) * 100
     const today = App.todayISO();
     const todayRecords = Store.getAttendanceByDate(today) || [];
@@ -92,13 +85,6 @@
       return;
     }
 
-    // Build subject dictionary for name lookup
-    const subjects = Store.getSubjects() || [];
-    const subjectMap = {};
-    subjects.forEach((s) => {
-      subjectMap[s.id] = s.name;
-    });
-
     // Sort: date desc, time desc, reverse-insertion order desc
     const sorted = attendance
       .map((record, index) => ({ record, index }))
@@ -122,8 +108,6 @@
       const studentName = student
         ? student.name
         : record.studentId || "Unknown Student";
-      const subjectName =
-        subjectMap[record.subjectId] || record.subjectId || "General";
       const status = record.status || "Present";
       const statusLower = status.toLowerCase();
 
@@ -136,7 +120,6 @@
         <div style="flex: 1; min-width: 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
           <div>
             <span style="font-weight: 600; color: var(--clr-text);">${App.esc(studentName)}</span>
-            <span style="color: var(--clr-text-muted); font-size: 0.85rem;"> &bull; ${App.esc(subjectName)}</span>
             <div style="font-size: 0.78rem; color: var(--clr-text-muted); margin-top: 2px;">
               ${App.esc(formattedDate)}${formattedTime ? " at " + App.esc(formattedTime) : ""}
             </div>
@@ -151,95 +134,12 @@
   }
 
   /**
-   * Render subject-wise attendance average as a bar chart
-   */
-  function renderSubjectBarChart() {
-    const chartEl = document.getElementById("subject-bar-chart");
-    if (!chartEl) return;
-
-    let subjects = (Store.getSubjects() || []).slice();
-    const attendance = Store.getAttendance() || [];
-
-    // Fallback: If subjects array is empty but attendance records exist, infer subjects
-    if (subjects.length === 0 && attendance.length > 0) {
-      const uniqueSubj = Array.from(
-        new Set(attendance.map((a) => a.subjectId).filter(Boolean))
-      );
-      subjects = uniqueSubj.map((id) => ({ id, name: id }));
-    }
-
-    if (subjects.length === 0 || attendance.length === 0) {
-      chartEl.innerHTML =
-        '<div class="table-empty" style="width: 100%; text-align: center; padding: 2rem;">No data yet.</div>';
-      return;
-    }
-
-    const threshold = Store.getThreshold();
-    chartEl.innerHTML = "";
-
-    subjects.forEach((subject) => {
-      const records = Store.getAttendanceBySubject(subject.id) || [];
-      const total = records.length;
-
-      let pct = 0;
-      if (total > 0) {
-        const attended = records.filter(
-          (r) => r.status === "Present" || r.status === "Late"
-        ).length;
-        pct = Math.round((attended / total) * 100);
-      }
-      const clampedPct = Math.min(100, Math.max(0, pct));
-
-      // Determine color based on threshold (good / warn / danger)
-      let colorType = "good";
-      let colorVar = "var(--clr-success)";
-      if (total === 0 || clampedPct < threshold) {
-        if (total > 0 && clampedPct >= 50) {
-          colorType = "warn";
-          colorVar = "var(--clr-warning)";
-        } else {
-          colorType = "danger";
-          colorVar = "var(--clr-danger)";
-        }
-      }
-
-      const col = document.createElement("div");
-      col.className = "bar-chart__col";
-      col.setAttribute(
-        "title",
-        `${subject.name}: ${total > 0 ? clampedPct + "% (" + total + " records)" : "No data yet"}`
-      );
-
-      const bar = document.createElement("div");
-      bar.className = `bar-chart__bar bar-chart__bar--${colorType}`;
-      bar.style.height = `${clampedPct}%`;
-      bar.style.backgroundColor = colorVar;
-      bar.dataset.pct = clampedPct;
-      bar.dataset.status = colorType;
-      bar.setAttribute(
-        "title",
-        `${subject.name}: ${total > 0 ? clampedPct + "%" : "No data yet"}`
-      );
-
-      const label = document.createElement("span");
-      label.className = "bar-chart__label";
-      label.textContent = subject.name;
-      label.setAttribute("title", subject.name);
-
-      col.appendChild(bar);
-      col.appendChild(label);
-      chartEl.appendChild(col);
-    });
-  }
-
-  /**
    * Initialize full dashboard
    */
   function initDashboard() {
     updateGreeting();
     renderStats();
     renderActivityFeed();
-    renderSubjectBarChart();
   }
 
   if (document.readyState === "loading") {

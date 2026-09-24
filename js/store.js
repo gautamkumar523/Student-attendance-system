@@ -1,8 +1,10 @@
 /* ============================================================
    store.js — Centralised localStorage Data Layer
-   All CRUD operations for students, subjects, teachers,
-   classes, attendance, and settings.
+   All CRUD operations for students, classes, attendance,
+   and settings.
    ============================================================ */
+
+// Attendance is daily-based (one record per student per day), no subjects or teachers
 
 const Store = (function () {
   "use strict";
@@ -10,11 +12,11 @@ const Store = (function () {
   // ── Keys ──────────────────────────────────────────────────────
   const KEYS = {
     students: "ams_students",
-    subjects: "ams_subjects",
-    teachers: "ams_teachers",
     classes: "ams_classes",
     attendance: "ams_attendance",
     threshold: "ams_threshold",
+    users: "ams_users",
+    session: "ams_session",
   };
 
   // ── Generic helpers ───────────────────────────────────────────
@@ -70,61 +72,6 @@ const Store = (function () {
     return getStudents().find((s) => s.id === id) || null;
   }
 
-  // ── Subjects ──────────────────────────────────────────────────
-  function getSubjects() {
-    return _get(KEYS.subjects, []);
-  }
-  function addSubject(subj) {
-    const list = getSubjects();
-    if (list.some((s) => s.id === subj.id)) {
-      return { ok: false, error: "Duplicate subject ID." };
-    }
-    list.push(subj);
-    _set(KEYS.subjects, list);
-    return { ok: true };
-  }
-  function updateSubject(id, data) {
-    const list = getSubjects();
-    const idx = list.findIndex((s) => s.id === id);
-    if (idx === -1) return { ok: false, error: "Subject not found." };
-    list[idx] = Object.assign({}, list[idx], data);
-    _set(KEYS.subjects, list);
-    return { ok: true };
-  }
-  function deleteSubject(id) {
-    _set(
-      KEYS.subjects,
-      getSubjects().filter((s) => s.id !== id)
-    );
-  }
-
-  // ── Teachers ──────────────────────────────────────────────────
-  function getTeachers() {
-    return _get(KEYS.teachers, []);
-  }
-  function addTeacher(teacher) {
-    const list = getTeachers();
-    if (list.some((t) => t.id === teacher.id)) {
-      return { ok: false, error: "Duplicate teacher ID." };
-    }
-    list.push(teacher);
-    _set(KEYS.teachers, list);
-    return { ok: true };
-  }
-  function updateTeacher(id, data) {
-    const list = getTeachers();
-    const idx = list.findIndex((t) => t.id === id);
-    if (idx === -1) return { ok: false, error: "Teacher not found." };
-    list[idx] = Object.assign({}, list[idx], data);
-    _set(KEYS.teachers, list);
-    return { ok: true };
-  }
-  function deleteTeacher(id) {
-    _set(
-      KEYS.teachers,
-      getTeachers().filter((t) => t.id !== id)
-    );
-  }
 
   // ── Classes ───────────────────────────────────────────────────
   // Class data model: { id, course, year } (no section, no semester)
@@ -156,6 +103,7 @@ const Store = (function () {
   }
 
   // ── Attendance ────────────────────────────────────────────────
+  // Attendance record: { studentId, classId, date, time, status, remarks }
   function getAttendance() {
     return _get(KEYS.attendance, []);
   }
@@ -164,11 +112,10 @@ const Store = (function () {
   }
   function addAttendanceRecord(record) {
     const list = getAttendance();
-    // Overwrite if same student+subject+date exists
+    // Overwrite if same student+date exists
     const idx = list.findIndex(
       (a) =>
         a.studentId === record.studentId &&
-        a.subjectId === record.subjectId &&
         a.date === record.date
     );
     if (idx !== -1) {
@@ -184,7 +131,6 @@ const Store = (function () {
       const idx = list.findIndex(
         (a) =>
           a.studentId === record.studentId &&
-          a.subjectId === record.subjectId &&
           a.date === record.date
       );
       if (idx !== -1) {
@@ -207,7 +153,6 @@ const Store = (function () {
   function getAttendanceFiltered(filters) {
     return getAttendance().filter((a) => {
       if (filters.studentId && a.studentId !== filters.studentId) return false;
-      if (filters.subjectId && a.subjectId !== filters.subjectId) return false;
       if (filters.teacherId && a.teacherId !== filters.teacherId) return false;
       if (filters.status && a.status !== filters.status) return false;
       if (filters.dateFrom && a.date < filters.dateFrom) return false;
@@ -236,18 +181,88 @@ const Store = (function () {
     return { total, present, absent, late, leave, pct };
   }
 
-  function getStudentSubjectStats(studentId, subjectId) {
-    const records = getAttendance().filter(
-      (a) => a.studentId === studentId && a.subjectId === subjectId
-    );
-    const total = records.length;
-    const present = records.filter((r) => r.status === "Present").length;
-    const absent = records.filter((r) => r.status === "Absent").length;
-    const late = records.filter((r) => r.status === "Late").length;
-    const leave = records.filter((r) => r.status === "Leave").length;
-    const pct = total > 0 ? ((present + late) / total) * 100 : null;
-    return { total, present, absent, late, leave, pct };
+
+  // ── Auth / Users ───────────────────────────────────────────────
+
+  const DEMO_USERS = [
+    { username: "admin",   password: "admin123",   role: "admin",   name: "Admin User",   email: "admin@attendtrack.com" },
+    { username: "teacher", password: "teacher123", role: "teacher", name: "Demo Teacher", email: "teacher@attendtrack.com" },
+    { username: "student", password: "student123", role: "student", name: "Demo Student", email: "student@attendtrack.com" },
+  ];
+
+  function seedDemoUsers() {
+    const existing = _get(KEYS.users, []);
+    if (existing.length === 0) {
+      _set(KEYS.users, DEMO_USERS);
+    } else {
+      // Ensure demo accounts always exist
+      DEMO_USERS.forEach(function (demo) {
+        if (!existing.some(function (u) { return u.username === demo.username; })) {
+          existing.push(demo);
+        }
+      });
+      _set(KEYS.users, existing);
+    }
   }
+
+  function getUsers() { return _get(KEYS.users, []); }
+
+  function addUser(user) {
+    var list = getUsers();
+    if (list.some(function (u) { return u.username === user.username; })) {
+      return { ok: false, error: "Username already exists." };
+    }
+    list.push(user);
+    _set(KEYS.users, list);
+    return { ok: true };
+  }
+
+  function login(username, password) {
+    var users = getUsers();
+    var user = users.find(function (u) {
+      return u.username === username && u.password === password;
+    });
+    if (!user) return { ok: false, error: "Invalid username or password." };
+    var session = {
+      username: user.username,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+      loginTime: new Date().toISOString(),
+    };
+    localStorage.setItem(KEYS.session, JSON.stringify(session));
+    return { ok: true, session: session };
+  }
+
+  function logout() {
+    localStorage.removeItem(KEYS.session);
+  }
+
+  function getSession() {
+    try {
+      var s = JSON.parse(localStorage.getItem(KEYS.session));
+      return s || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function isAuthenticated() {
+    return getSession() !== null;
+  }
+
+  function hasRole(role) {
+    var s = getSession();
+    return s !== null && s.role === role;
+  }
+
+  function getCurrentRole() {
+    var s = getSession();
+    return s ? s.role : null;
+  }
+
+  // Seed demo users on load
+  seedDemoUsers();
 
   // ── Public API ────────────────────────────────────────────────
   return {
@@ -258,16 +273,6 @@ const Store = (function () {
     updateStudent,
     deleteStudent,
     getStudentById,
-    // Subjects
-    getSubjects,
-    addSubject,
-    updateSubject,
-    deleteSubject,
-    // Teachers
-    getTeachers,
-    addTeacher,
-    updateTeacher,
-    deleteTeacher,
     // Classes
     getClasses,
     addClass,
@@ -287,7 +292,16 @@ const Store = (function () {
     setThreshold,
     // Computed
     getStudentStats,
-    getStudentSubjectStats,
+    // Auth
+    getUsers,
+    addUser,
+    login,
+    logout,
+    getSession,
+    isAuthenticated,
+    hasRole,
+    getCurrentRole,
+    seedDemoUsers,
     // Utils
     generateId: _generateId,
   };

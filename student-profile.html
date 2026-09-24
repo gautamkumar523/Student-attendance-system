@@ -117,29 +117,6 @@
               <div class="stat-card__label">Overall %</div>
             </div>
           </div>
-
-          <!-- Per-subject Breakdown Table -->
-          <div class="card__header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
-            <h3 class="card__title" style="font-size: 1.1rem;">Per-Subject Attendance Breakdown</h3>
-          </div>
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Subject Name</th>
-                  <th>Present</th>
-                  <th>Absent</th>
-                  <th>Late</th>
-                  <th>Leave</th>
-                  <th>Total</th>
-                  <th>Attendance %</th>
-                </tr>
-              </thead>
-              <tbody id="subject-breakdown-body">
-                <!-- Rendered by JS -->
-              </tbody>
-            </table>
-          </div>
         </div>
 
         <!-- Tab 3: Attendance History -->
@@ -160,12 +137,6 @@
               <label for="hist-specific-date" class="form-label">Select Date</label>
               <input type="date" id="hist-specific-date" />
             </div>
-            <div class="form-group">
-              <label for="hist-subject-filter" class="form-label">Subject</label>
-              <select id="hist-subject-filter">
-                <option value="">All Subjects</option>
-              </select>
-            </div>
             <button type="button" class="btn btn--primary" id="hist-filter-btn">Filter</button>
             <button type="button" class="btn btn--outline" id="hist-reset-btn">Reset</button>
           </div>
@@ -176,26 +147,12 @@
               <label for="hist-month-picker" class="form-label">Select Month</label>
               <input type="month" id="hist-month-picker" />
             </div>
-            <div class="form-group">
-              <label for="hist-month-subject" class="form-label">Subject</label>
-              <select id="hist-month-subject">
-                <option value="">All Subjects</option>
-              </select>
-            </div>
             <button type="button" class="btn btn--primary" id="hist-month-filter-btn">Filter</button>
             <button type="button" class="btn btn--outline" id="hist-month-reset-btn">Reset</button>
           </div>
 
-          <!-- Total view filter (subject only) -->
-          <div class="filter-bar" id="hist-total-filter" style="display: none;">
-            <div class="form-group">
-              <label for="hist-total-subject" class="form-label">Subject</label>
-              <select id="hist-total-subject">
-                <option value="">All Subjects</option>
-              </select>
-            </div>
-            <button type="button" class="btn btn--primary" id="hist-total-filter-btn">Filter</button>
-          </div>
+          <!-- Total view filter -->
+          <div class="filter-bar" id="hist-total-filter" style="display: none;"></div>
 
           <!-- Summary stats for current view -->
           <div id="hist-summary" class="stats-grid" style="margin-bottom: 1rem;"></div>
@@ -207,8 +164,6 @@
                 <tr>
                   <th>Date</th>
                   <th>Time</th>
-                  <th>Subject</th>
-                  <th>Teacher</th>
                   <th>Status</th>
                   <th>Remarks</th>
                 </tr>

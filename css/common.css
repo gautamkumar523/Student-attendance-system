@@ -156,6 +156,71 @@ img { max-width: 100%; display: block; }
 }
 .sidebar-overlay--visible { display: block; opacity: 1; }
 
+/* Sidebar user section */
+.sidebar__user {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: auto;
+  background: rgba(0,0,0,0.15);
+}
+.sidebar__user-info {
+  display: flex; align-items: center; gap: 0.65rem;
+  overflow: hidden;
+}
+.sidebar__user-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--clr-primary), #8b5cf6);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.9rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+}
+.sidebar__user-details { overflow: hidden; }
+.sidebar__user-name {
+  font-size: 0.82rem; font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sidebar__user-role {
+  font-size: 0.7rem; font-weight: 500;
+  color: rgba(255,255,255,0.45);
+}
+.sidebar__logout {
+  background: none; border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.sidebar__logout:hover {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.3);
+  color: #f87171;
+}
+
+/* Topbar logout */
+.topbar__logout {
+  background: none; border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  cursor: pointer; font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+  margin-left: auto;
+}
+.topbar__logout:hover {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.3);
+  color: #f87171;
+}
+
 /* ============================================================
    TOP BAR (mobile)
    ============================================================ */
@@ -309,6 +374,7 @@ input[type="tel"],
 input[type="number"],
 input[type="date"],
 input[type="time"],
+input[type="password"],
 select,
 textarea {
   padding: 0.65rem 0.85rem;

@@ -2,7 +2,7 @@
    student-profile.js — Student Profile Page Controller
    Vanilla JavaScript for Student Attendance Management System
    Handles student header, tabs, personal info display,
-   attendance summary, per-subject breakdown, and history filter.
+   attendance summary, and history filter.
    ============================================================ */
 
 (function () {
@@ -232,72 +232,6 @@
         pctCard.className = "stat-card";
       }
     }
-
-    // Per-subject Breakdown Table
-    const allSubjects = Store.getSubjects();
-    const studentRecords = Store.getAttendanceByStudent(studentId);
-
-    const subjectMap = new Map();
-    allSubjects.forEach((s) => subjectMap.set(s.id, s.name));
-    studentRecords.forEach((r) => {
-      if (r.subjectId && !subjectMap.has(r.subjectId)) {
-        subjectMap.set(r.subjectId, r.subjectId);
-      }
-    });
-
-    const tbody = document.getElementById("subject-breakdown-body");
-    if (!tbody) return;
-
-    if (subjectMap.size === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" class="table-empty">No subject attendance records found.</td></tr>`;
-      return;
-    }
-
-    let rowsHtml = "";
-    subjectMap.forEach((name, subId) => {
-      const subStats = Store.getStudentSubjectStats(studentId, subId);
-      const isBelowThreshold = subStats.total > 0 && subStats.pct !== null && subStats.pct < threshold;
-      const rowClass = isBelowThreshold ? "row--danger" : "";
-
-      let pctDisplay = "N/A";
-      let badgeClass = "";
-      let barClass = "";
-      let width = 0;
-
-      if (subStats.pct !== null) {
-        pctDisplay = Number.isInteger(subStats.pct) ? `${subStats.pct}%` : `${subStats.pct.toFixed(1)}%`;
-        badgeClass = App.pctBadgeClass(subStats.pct);
-        width = Math.min(100, Math.max(0, subStats.pct));
-        if (subStats.pct >= threshold) {
-          barClass = "progress__bar--good";
-        } else if (subStats.pct >= 50) {
-          barClass = "progress__bar--warn";
-        } else {
-          barClass = "progress__bar--danger";
-        }
-      }
-
-      rowsHtml += `
-        <tr class="${rowClass}">
-          <td><strong>${App.esc(name)}</strong></td>
-          <td>${subStats.present}</td>
-          <td>${subStats.absent}</td>
-          <td>${subStats.late}</td>
-          <td>${subStats.leave}</td>
-          <td>${subStats.total}</td>
-          <td>
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span class="pct-badge ${badgeClass}" ${subStats.pct === null ? 'style="background:#e9ecef;color:#6c757d;"' : ""}>${pctDisplay}</span>
-              <div class="progress" style="height: 8px; flex: 1; min-width: 70px; max-width: 140px;">
-                <div class="progress__bar ${barClass}" style="width: ${width}%;"></div>
-              </div>
-            </div>
-          </td>
-        </tr>
-      `;
-    });
-
-    tbody.innerHTML = rowsHtml;
   }
 
   // ── Tab 3: Attendance History ─────────────────────────────────
@@ -305,30 +239,7 @@
     const tbody = document.getElementById("hist-table-body");
     if (!tbody) return;
 
-    const allSubjects = Store.getSubjects();
-    const allTeachers = Store.getTeachers();
     const threshold = Store.getThreshold();
-
-    const subjectMap = new Map();
-    allSubjects.forEach((s) => subjectMap.set(s.id, s.name));
-    const teacherMap = new Map();
-    allTeachers.forEach((t) => teacherMap.set(t.id, t.name));
-
-    const studentRecords = Store.getAttendanceByStudent(studentId);
-    studentRecords.forEach((r) => {
-      if (r.subjectId && !subjectMap.has(r.subjectId)) subjectMap.set(r.subjectId, r.subjectId);
-      if (r.teacherId && !teacherMap.has(r.teacherId)) teacherMap.set(r.teacherId, r.teacherId);
-    });
-
-    // Populate all 3 subject dropdowns
-    const subjectOptions = [];
-    subjectMap.forEach((name, id) => subjectOptions.push({ id, name }));
-    subjectOptions.sort((a, b) => a.name.localeCompare(b.name));
-
-    ["hist-subject-filter", "hist-month-subject", "hist-total-subject"].forEach((selId) => {
-      const sel = document.getElementById(selId);
-      if (sel) App.populateSelect(sel, subjectOptions, "id", "name", "All Subjects");
-    });
 
     // Set default date to today
     const specificDate = document.getElementById("hist-specific-date");
@@ -362,25 +273,16 @@
     // ── Render table based on current mode ──
     function renderTable() {
       let records = Store.getAttendanceByStudent(studentId);
-      let subjectVal = "";
 
       if (currentMode === "day") {
         const dateVal = specificDate ? specificDate.value : "";
-        subjectVal = document.getElementById("hist-subject-filter")?.value || "";
         if (dateVal) records = records.filter((r) => r.date === dateVal);
-        if (subjectVal) records = records.filter((r) => r.subjectId === subjectVal);
       } else if (currentMode === "month") {
         const monthVal = monthPicker ? monthPicker.value : "";
-        subjectVal = document.getElementById("hist-month-subject")?.value || "";
         if (monthVal) {
           const range = App.getMonthRange(monthVal);
           if (range) records = records.filter((r) => r.date >= range.start && r.date <= range.end);
         }
-        if (subjectVal) records = records.filter((r) => r.subjectId === subjectVal);
-      } else {
-        // total
-        subjectVal = document.getElementById("hist-total-subject")?.value || "";
-        if (subjectVal) records = records.filter((r) => r.subjectId === subjectVal);
       }
 
       // Sort descending
@@ -393,18 +295,14 @@
       renderHistSummary(records);
 
       if (records.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No attendance records found for this view.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="table-empty">No attendance records found for this view.</td></tr>';
         return;
       }
 
       tbody.innerHTML = records.map((rec) => {
-        const subName = subjectMap.get(rec.subjectId) || rec.subjectId || "—";
-        const teachName = teacherMap.get(rec.teacherId) || rec.teacherId || "—";
         return `<tr>
           <td>${App.formatDate(rec.date)}</td>
           <td>${App.formatTime(rec.time)}</td>
-          <td>${App.esc(subName)}</td>
-          <td>${App.esc(teachName)}</td>
           <td>${App.statusPillHTML(rec.status)}</td>
           <td>${App.esc(rec.remarks || "—")}</td>
         </tr>`;
@@ -461,15 +359,11 @@
     if (filterBtn) filterBtn.addEventListener("click", renderTable);
     if (resetBtn) resetBtn.addEventListener("click", () => {
       if (specificDate) specificDate.value = App.todayISO();
-      const sf = document.getElementById("hist-subject-filter");
-      if (sf) sf.value = "";
       renderTable();
     });
     if (monthFilterBtn) monthFilterBtn.addEventListener("click", renderTable);
     if (monthResetBtn) monthResetBtn.addEventListener("click", () => {
       if (monthPicker) monthPicker.value = App.todayISO().substring(0, 7);
-      const ms = document.getElementById("hist-month-subject");
-      if (ms) ms.value = "";
       renderTable();
     });
     if (totalFilterBtn) totalFilterBtn.addEventListener("click", renderTable);
@@ -477,10 +371,6 @@
     // Auto-filter on change
     if (specificDate) specificDate.addEventListener("change", renderTable);
     if (monthPicker) monthPicker.addEventListener("change", renderTable);
-    ["hist-subject-filter", "hist-month-subject", "hist-total-subject"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener("change", renderTable);
-    });
 
     // Initial render
     renderTable();

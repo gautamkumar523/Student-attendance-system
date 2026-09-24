@@ -10,10 +10,8 @@
   // ── DOM Elements ──────────────────────────────────────────────
   const filterFrom = document.getElementById("filter-from");
   const filterTo = document.getElementById("filter-to");
-  const filterSubject = document.getElementById("filter-subject");
   const filterStudent = document.getElementById("filter-student");
   const filterStatus = document.getElementById("filter-status");
-  const filterTeacher = document.getElementById("filter-teacher");
 
   const btnFilter = document.getElementById("btn-filter");
   const btnClear = document.getElementById("btn-clear");
@@ -30,23 +28,9 @@
   let currentFilteredRecords = [];
   let currentResolvedRecords = [];
 
-  // ── Populate Select Dropdowns ─────────────────────────────────
-  function populateDropdowns() {
-    if (filterSubject) {
-      const subjects = Store.getSubjects();
-      App.populateSelect(filterSubject, subjects, "id", "name", "All Subjects");
-    }
-    if (filterTeacher) {
-      const teachers = Store.getTeachers();
-      App.populateSelect(filterTeacher, teachers, "id", "name", "All Teachers");
-    }
-  }
-
   // ── Pre-fill Filters from URL Query Params ────────────────────
   function initFromUrlParams() {
     const paramStudent = App.getUrlParam("student") || App.getUrlParam("studentId") || App.getUrlParam("id");
-    const paramSubject = App.getUrlParam("subject") || App.getUrlParam("subjectId");
-    const paramTeacher = App.getUrlParam("teacher") || App.getUrlParam("teacherId");
     const paramStatus = App.getUrlParam("status");
     const paramDateFrom = App.getUrlParam("dateFrom") || App.getUrlParam("from");
     const paramDateTo = App.getUrlParam("dateTo") || App.getUrlParam("to");
@@ -54,12 +38,6 @@
 
     if (paramStudent && filterStudent) {
       filterStudent.value = paramStudent;
-    }
-    if (paramSubject && filterSubject) {
-      filterSubject.value = paramSubject;
-    }
-    if (paramTeacher && filterTeacher) {
-      filterTeacher.value = paramTeacher;
     }
     if (paramStatus && filterStatus) {
       filterStatus.value = paramStatus;
@@ -74,17 +52,11 @@
   }
 
   // ── Resolve Record Details ────────────────────────────────────
-  function resolveRecord(rec, subjectsMap, teachersMap) {
+  function resolveRecord(rec) {
     const student = Store.getStudentById(rec.studentId);
     const studentName = student && student.name ? student.name : (rec.studentId || "—");
     const rollNo = (student && (student.rollNo || student.admissionNo || student.id)) || rec.studentId || "—";
     const studentPhoto = student && student.photo ? student.photo : "assets/default-avatar.svg";
-
-    const subj = subjectsMap.get(rec.subjectId);
-    const subjectName = subj ? subj.name : (rec.subjectId || "—");
-
-    const teach = teachersMap.get(rec.teacherId);
-    const teacherName = teach ? teach.name : (rec.teacherId || "—");
 
     return {
       raw: rec,
@@ -93,10 +65,6 @@
       studentName,
       rollNo,
       studentPhoto,
-      subjectId: rec.subjectId || "",
-      subjectName,
-      teacherId: rec.teacherId || "",
-      teacherName,
       date: rec.date || "",
       time: rec.time || "",
       status: rec.status || "",
@@ -189,14 +157,6 @@
           valA = a.rollNo;
           valB = b.rollNo;
           break;
-        case "subject":
-          valA = a.subjectName;
-          valB = b.subjectName;
-          break;
-        case "teacher":
-          valA = a.teacherName;
-          valB = b.teacherName;
-          break;
         case "status":
           valA = a.status;
           valB = b.status;
@@ -239,7 +199,7 @@
     if (currentResolvedRecords.length === 0) {
       recordsBody.innerHTML = `
         <tr>
-          <td colspan="8" class="table-empty">
+          <td colspan="6" class="table-empty">
             <div style="padding: 2.5rem 1rem; text-align: center;">
               <div style="font-size: 2.5rem; line-height: 1; margin-bottom: 0.75rem;">📋</div>
               <div style="font-size: 1.05rem; font-weight: 600; color: var(--clr-text); margin-bottom: 0.35rem;">
@@ -276,8 +236,6 @@
             </div>
           </td>
           <td><span style="font-weight: 500;">${App.esc(item.rollNo)}</span></td>
-          <td>${App.esc(item.subjectName)}</td>
-          <td>${App.esc(item.teacherName)}</td>
           <td>${statusPill}</td>
           <td>${App.esc(item.remarks || "—")}</td>
         </tr>
@@ -291,8 +249,6 @@
   function applyFilters() {
     const dateFrom = filterFrom ? filterFrom.value : "";
     const dateTo = filterTo ? filterTo.value : "";
-    const subjectId = filterSubject ? filterSubject.value : "";
-    const teacherId = filterTeacher ? filterTeacher.value : "";
     const status = filterStatus ? filterStatus.value : "";
     const studentQuery = filterStudent ? filterStudent.value.trim().toLowerCase() : "";
 
@@ -304,8 +260,6 @@
     const filterParams = {};
     if (dateFrom) filterParams.dateFrom = dateFrom;
     if (dateTo) filterParams.dateTo = dateTo;
-    if (subjectId) filterParams.subjectId = subjectId;
-    if (teacherId) filterParams.teacherId = teacherId;
     if (status) filterParams.status = status;
 
     let records = Store.getAttendanceFiltered(filterParams);
@@ -326,12 +280,7 @@
     }
 
     currentFilteredRecords = records;
-
-    // Cache subjects and teachers for fast resolution
-    const subjectsMap = new Map(Store.getSubjects().map((s) => [s.id, s]));
-    const teachersMap = new Map(Store.getTeachers().map((t) => [t.id, t]));
-
-    currentResolvedRecords = records.map((r) => resolveRecord(r, subjectsMap, teachersMap));
+    currentResolvedRecords = records.map((r) => resolveRecord(r));
 
     renderSummary(currentFilteredRecords);
     renderTable();
@@ -341,10 +290,8 @@
   function clearFilters() {
     if (filterFrom) filterFrom.value = "";
     if (filterTo) filterTo.value = "";
-    if (filterSubject) filterSubject.value = "";
     if (filterStudent) filterStudent.value = "";
     if (filterStatus) filterStatus.value = "";
-    if (filterTeacher) filterTeacher.value = "";
 
     applyFilters();
     App.toast("Filters cleared.", "info");
@@ -368,8 +315,6 @@
       "Time",
       "Student",
       "Roll No",
-      "Subject",
-      "Teacher",
       "Status",
       "Remarks",
     ];
@@ -379,8 +324,6 @@
       csvEscape(item.time),
       csvEscape(item.studentName),
       csvEscape(item.rollNo),
-      csvEscape(item.subjectName),
-      csvEscape(item.teacherName),
       csvEscape(item.status),
       csvEscape(item.remarks),
     ]);
@@ -447,7 +390,6 @@
 
   // ── Initialize Page ───────────────────────────────────────────
   function init() {
-    populateDropdowns();
     initFromUrlParams();
     applyFilters();
     initEvents();

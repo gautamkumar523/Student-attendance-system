@@ -14,72 +14,12 @@
 
     <div class="card">
       <div class="tabs" role="tablist">
-        <button type="button" class="tab-btn tab-btn--active" data-tab="tab-subjects" role="tab">Subjects</button>
-        <button type="button" class="tab-btn" data-tab="tab-teachers" role="tab">Teachers</button>
-        <button type="button" class="tab-btn" data-tab="tab-classes" role="tab">Classes</button>
+        <button type="button" class="tab-btn tab-btn--active" data-tab="tab-classes" role="tab">Classes</button>
         <button type="button" class="tab-btn" data-tab="tab-threshold" role="tab">Threshold</button>
       </div>
 
-      <!-- Tab 1: Subjects -->
-      <div class="tab-panel tab-panel--active" id="tab-subjects" role="tabpanel">
-        <div class="filter-bar">
-          <div class="form-group">
-            <label for="subj-id">Subject ID</label>
-            <input type="text" id="subj-id" placeholder="e.g. CS101" autocomplete="off" />
-          </div>
-          <div class="form-group">
-            <label for="subj-name">Subject Name</label>
-            <input type="text" id="subj-name" placeholder="e.g. Data Structures" autocomplete="off" />
-          </div>
-          <button type="button" class="btn btn--primary" id="btn-add-subj">Add Subject</button>
-          <button type="button" class="btn btn--outline" id="btn-cancel-subj" style="display: none;">Cancel</button>
-        </div>
-
-        <div class="table-wrapper">
-          <table id="subjects-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th style="width: 170px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="subjects-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Tab 2: Teachers -->
-      <div class="tab-panel" id="tab-teachers" role="tabpanel">
-        <div class="filter-bar">
-          <div class="form-group">
-            <label for="teach-id">Teacher ID</label>
-            <input type="text" id="teach-id" placeholder="e.g. TCH101" autocomplete="off" />
-          </div>
-          <div class="form-group">
-            <label for="teach-name">Teacher Name</label>
-            <input type="text" id="teach-name" placeholder="e.g. Dr. Alan Turing" autocomplete="off" />
-          </div>
-          <button type="button" class="btn btn--primary" id="btn-add-teach">Add Teacher</button>
-          <button type="button" class="btn btn--outline" id="btn-cancel-teach" style="display: none;">Cancel</button>
-        </div>
-
-        <div class="table-wrapper">
-          <table id="teachers-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th style="width: 170px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="teachers-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Tab 3: Classes -->
-      <div class="tab-panel" id="tab-classes" role="tabpanel">
+      <!-- Tab: Classes -->
+      <div class="tab-panel tab-panel--active" id="tab-classes" role="tabpanel">
         <div class="filter-bar">
           <div class="form-group">
             <label for="cls-course">Course</label>

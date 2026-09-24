@@ -12,13 +12,13 @@
   <div class="page">
     <h1 class="page-title">Mark Attendance</h1>
 
-    <!-- Configuration Warning Banner (shown if subjects, teachers, or classes are missing) -->
+    <!-- Configuration Warning Banner (shown if classes are missing) -->
     <div id="config-warning" class="card" style="display: none; margin-bottom: 1.5rem; background: var(--clr-warning-light); border-left: 4px solid var(--clr-warning);">
       <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
         <div>
           <strong style="color: #856404; font-size: 0.95rem;">⚠️ Setup Required:</strong>
           <span id="config-warning-text" style="color: #856404; font-size: 0.9rem; margin-left: 0.35rem;">
-            Please configure subjects, teachers, and classes in Settings before marking attendance.
+            Please configure classes in Settings before marking attendance.
           </span>
         </div>
         <a href="settings.html" class="btn btn--warning btn--small">Go to Settings →</a>
@@ -34,18 +34,6 @@
         <div class="form-group">
           <label class="form-label" for="att-date">Date <span class="required" style="color: var(--clr-danger);">*</span></label>
           <input type="date" id="att-date" />
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="att-subject">Subject <span class="required" style="color: var(--clr-danger);">*</span></label>
-          <select id="att-subject">
-            <option value="">Select Subject</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="att-teacher">Teacher <span class="required" style="color: var(--clr-danger);">*</span></label>
-          <select id="att-teacher">
-            <option value="">Select Teacher</option>
-          </select>
         </div>
         <div class="form-group">
           <label class="form-label" for="att-class">Class <span class="required" style="color: var(--clr-danger);">*</span></label>

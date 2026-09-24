@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — AttendTrack</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%);
+      padding: 1rem;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+    }
+    .login-brand {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #fff;
+    }
+    .login-brand__icon {
+      font-size: 2.5rem;
+      width: 60px; height: 60px;
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--clr-primary), #8b5cf6);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      margin-bottom: 1rem;
+    }
+    .login-brand__title {
+      display: inline-block;
+      margin-left: 0.5rem;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .login-brand__sub {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 0.25rem;
+    }
+    .login-card {
+      background: var(--clr-surface);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .login-card h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: var(--clr-text);
+    }
+    .login-form .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .login-form .form-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--clr-text-secondary);
+    }
+    .login-form .role-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .login-form .role-option {
+      position: relative;
+    }
+    .login-form .role-option input {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+    }
+    .login-form .role-option label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.85rem 0.5rem;
+      border: 2px solid var(--clr-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--clr-text-muted);
+      margin-bottom: 0;
+    }
+    .login-form .role-option label:hover {
+      border-color: var(--clr-primary);
+      color: var(--clr-primary);
+    }
+    .login-form .role-option input:checked + label {
+      border-color: var(--clr-primary);
+      background: var(--clr-primary-light);
+      color: var(--clr-primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+    .role-icon { font-size: 1.4rem; }
+    .login-error {
+      background: var(--clr-danger-light);
+      color: #991b1b;
+      padding: 0.65rem 1rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      display: none;
+      text-align: center;
+    }
+    .login-error.visible { display: block; }
+    .login-btn {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+    .demo-accounts {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--clr-border);
+    }
+    .demo-accounts h3 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--clr-text-muted);
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .demo-chip {
+      padding: 0.5rem;
+      border-radius: var(--radius-xs);
+      background: var(--clr-bg);
+      border: 1px solid var(--clr-border);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 0.72rem;
+    }
+    .demo-chip:hover {
+      border-color: var(--clr-primary);
+      background: var(--clr-primary-light);
+    }
+    .demo-chip__role {
+      font-weight: 700;
+      color: var(--clr-text);
+      display: block;
+      margin-bottom: 0.15rem;
+      font-size: 0.78rem;
+    }
+    .demo-chip__cred {
+      color: var(--clr-text-muted);
+      line-height: 1.4;
+    }
+    @media (max-width: 480px) {
+      .login-card { padding: 1.5rem; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .login-form .role-selector { grid-template-columns: 1fr; }
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="login-brand__icon">📋</div>
+      <div class="login-brand__title">AttendTrack</div>
+      <div class="login-brand__sub">Student Attendance Management System</div>
+    </div>
+
+    <div class="login-card">
+      <h2>Sign In</h2>
+
+      <div class="login-error" id="login-error"></div>
+
+      <form class="login-form" id="login-form" autocomplete="off">
+        <div class="form-group">
+          <label for="inp-username">Username</label>
+          <input type="text" id="inp-username" placeholder="Enter your username" required autofocus />
+        </div>
+
+        <div class="form-group">
+          <label for="inp-password">Password</label>
+          <input type="password" id="inp-password" placeholder="Enter your password" required />
+        </div>
+
+        <div class="form-group">
+          <!-- <label>Login as</label> -->
+          <div class="role-selector">
+            <div class="role-option">
+              <input type="radio" name="role" id="role-admin" value="admin" checked />
+              <label for="role-admin">
+                <span class="role-icon">🛡️</span>
+                Admin
+              </label>
+            </div>
+            <div class="role-option">
+              <input type="radio" name="role" id="role-teacher" value="teacher" />
+              <label for="role-teacher">
+                <span class="role-icon">👨‍🏫</span>
+                Teacher
+              </label>
+            </div>
+            <div class="role-option">
+              <input type="radio" name="role" id="role-student" value="student" />
+              <label for="role-student">
+                <span class="role-icon">🎓</span>
+                Student
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary login-btn">Sign In →</button>
+      </form>
+
+      <!-- <div class="demo-accounts">
+        <h3>Demo Accounts</h3>
+        <div class="demo-grid">
+          <div class="demo-chip" data-user="admin" data-pass="admin123" data-role="admin">
+            <span class="demo-chip__role">🛡️ Admin</span>
+            <span class="demo-chip__cred">admin / admin123</span>
+          </div>
+          <div class="demo-chip" data-user="teacher" data-pass="teacher123" data-role="teacher">
+            <span class="demo-chip__role">👨‍🏫 Teacher</span>
+            <span class="demo-chip__cred">teacher / teacher123</span>
+          </div>
+          <div class="demo-chip" data-user="student" data-pass="student123" data-role="student">
+            <span class="demo-chip__role">🎓 Student</span>
+            <span class="demo-chip__cred">student / student123</span>
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

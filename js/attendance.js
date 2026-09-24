@@ -9,8 +9,6 @@
 
   // ── DOM References ──────────────────────────────────────────
   const attDateInput = document.getElementById("att-date");
-  const attSubjectSelect = document.getElementById("att-subject");
-  const attTeacherSelect = document.getElementById("att-teacher");
   const attClassSelect = document.getElementById("att-class");
 
   const attendanceCard = document.getElementById("attendance-card");
@@ -63,22 +61,13 @@
 
   // ── Helper: Check Configuration Status ──────────────────────
   function checkConfiguration() {
-    const subjects = Store.getSubjects();
-    const teachers = Store.getTeachers();
     const classes = Store.getClasses();
 
-    const missing = [];
-    if (subjects.length === 0) missing.push("Subjects");
-    if (teachers.length === 0) missing.push("Teachers");
-    if (classes.length === 0) missing.push("Classes");
-
-    if (missing.length > 0) {
+    if (classes.length === 0) {
       if (configWarning && configWarningText) {
         configWarning.style.display = "block";
         configWarningText.textContent =
-          "Missing configuration: " +
-          missing.join(", ") +
-          ". Please configure them in Settings before taking attendance.";
+          "Missing configuration: Classes. Please configure them in Settings before taking attendance.";
       }
       return false;
     } else {
@@ -96,27 +85,7 @@
       attDateInput.value = App.todayISO();
     }
 
-    // 2. Populate Subjects
-    const subjects = Store.getSubjects();
-    App.populateSelect(
-      attSubjectSelect,
-      subjects,
-      "id",
-      "name",
-      "Select Subject"
-    );
-
-    // 3. Populate Teachers
-    const teachers = Store.getTeachers();
-    App.populateSelect(
-      attTeacherSelect,
-      teachers,
-      "id",
-      "name",
-      "Select Teacher"
-    );
-
-    // 4. Populate Classes
+    // 2. Populate Classes
     const classes = Store.getClasses().map((c) => ({
       id: c.id,
       label: formatClassLabel(c),
@@ -129,19 +98,11 @@
       "Select Class"
     );
 
-    // 5. Preselect from URL params if available
-    const paramSubject = App.getUrlParam("subject");
-    const paramTeacher = App.getUrlParam("teacher");
+    // 3. Preselect from URL params if available
     const paramClass = App.getUrlParam("class");
     const paramDate = App.getUrlParam("date");
 
     if (paramDate) attDateInput.value = paramDate;
-    if (paramSubject && subjects.some((s) => s.id === paramSubject)) {
-      attSubjectSelect.value = paramSubject;
-    }
-    if (paramTeacher && teachers.some((t) => t.id === paramTeacher)) {
-      attTeacherSelect.value = paramTeacher;
-    }
     if (paramClass && classes.some((c) => c.id === paramClass)) {
       attClassSelect.value = paramClass;
     }
@@ -176,24 +137,25 @@
     return allStudents;
   }
 
-  // ── Load Existing Attendance for Date & Subject ─────────────
+  // ── Load Existing Attendance for Date ───────────────────────
   function getExistingAttendanceMap() {
     const date = attDateInput.value;
-    const subjectId = attSubjectSelect.value;
+    const classId = attClassSelect ? attClassSelect.value : "";
 
-    if (!date || !subjectId) {
+    if (!date) {
       return {};
     }
 
     const records = Store.getAttendanceFiltered({
       dateFrom: date,
       dateTo: date,
-      subjectId: subjectId,
     });
 
     const map = {};
     records.forEach((rec) => {
-      map[rec.studentId] = rec;
+      if (!classId || !rec.classId || rec.classId === classId) {
+        map[rec.studentId] = rec;
+      }
     });
     return map;
   }
@@ -400,20 +362,6 @@
       return;
     }
 
-    const subjectId = attSubjectSelect.value;
-    if (!subjectId) {
-      App.toast("Please select a subject before saving.", "error");
-      attSubjectSelect.focus();
-      return;
-    }
-
-    const teacherId = attTeacherSelect.value;
-    if (!teacherId) {
-      App.toast("Please select a teacher before saving.", "error");
-      attTeacherSelect.focus();
-      return;
-    }
-
     const classId = attClassSelect.value;
     if (!classId) {
       App.toast("Please select a class before saving.", "error");
@@ -441,8 +389,6 @@
 
       records.push({
         studentId: studentId,
-        subjectId: subjectId,
-        teacherId: teacherId,
         classId: classId,
         date: date,
         time: currentTime,
@@ -508,10 +454,6 @@
 
     // 3. Selection Filter Changes
     attClassSelect.addEventListener("change", function () {
-      renderStudentTable();
-    });
-
-    attSubjectSelect.addEventListener("change", function () {
       renderStudentTable();
     });
 
