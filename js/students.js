@@ -187,8 +187,9 @@
 
       if (allCount === 0) {
         emptyStateTitle.textContent = "No students registered yet";
-        emptyStateDesc.innerHTML =
-          'Get started by adding your first student.<br><a href="add-student.html" class="btn btn--primary btn--small" style="margin-top: 0.75rem; display: inline-flex;">➕ Add Student</a>';
+        emptyStateDesc.innerHTML = isAdmin
+          ? 'Get started by adding your first student.<br><a href="add-student.html" class="btn btn--primary btn--small" style="margin-top: 0.75rem; display: inline-flex;">➕ Add Student</a>'
+          : 'No students have been added by the admin yet.';
       } else {
         emptyStateTitle.textContent = "No matching students found";
         emptyStateDesc.innerHTML =
@@ -236,10 +237,12 @@
             <span class="pct-badge ${pctBadgeCls}" ${badgeStyle}>${pctText}</span>
           </td>
           <td style="text-align: right;">
+            ${isAdmin ? `
             <div style="display: inline-flex; gap: 0.5rem; justify-content: flex-end;">
               <a href="add-student.html?edit=${encodeURIComponent(student.id)}" class="btn btn--small btn--outline" title="Edit Student">✏️ Edit</a>
               <button type="button" class="btn btn--small btn--danger btn-delete-student" data-id="${App.esc(student.id)}" data-name="${App.esc(student.name || rollNo)}" title="Delete Student">🗑️ Delete</button>
             </div>
+            ` : ""}
           </td>
         </tr>
       `;
@@ -273,10 +276,12 @@
           <div class="student-card__pct">
             <span class="pct-badge ${pctBadgeCls}" ${badgeStyle}>${pctText}</span>
           </div>
+          ${isAdmin ? `
           <div class="student-card__actions">
             <a href="add-student.html?edit=${encodeURIComponent(student.id)}" class="btn btn--small btn--outline" onclick="event.stopPropagation();" title="Edit Student">✏️ Edit</a>
             <button type="button" class="btn btn--small btn--danger btn-delete-student" data-id="${App.esc(student.id)}" data-name="${App.esc(student.name || rollNo)}" onclick="event.stopPropagation();" title="Delete Student">🗑️ Delete</button>
           </div>
+          ` : ""}
         </div>
       `;
     });
@@ -323,7 +328,13 @@
   }
 
   // ── Event Handlers & Initialization ────────────────────────
+  let isAdmin = false;
+
   function init() {
+    // Determine role
+    const session = Store.getSession();
+    isAdmin = session && session.role === "admin";
+
     // Cache DOM refs
     searchInput = document.getElementById("search-input");
     btnTable = document.getElementById("btn-table");
@@ -339,6 +350,12 @@
     emptyStateTitle = document.getElementById("empty-state-title");
     emptyStateDesc = document.getElementById("empty-state-desc");
     studentCountEl = document.getElementById("student-count");
+
+    // Hide Add Student button for non-admin
+    const btnAddStudent = document.getElementById("btn-add-student");
+    if (btnAddStudent && !isAdmin) {
+      btnAddStudent.style.display = "none";
+    }
 
     // Search and filters
     searchInput.addEventListener("input", render);
