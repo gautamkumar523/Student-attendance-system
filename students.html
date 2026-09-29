@@ -8,60 +8,61 @@
   <link rel="stylesheet" href="css/pages.css" />
 </head>
 <body>
-  <!-- Sidebar nav is auto-injected by common.js -->
   <div class="page">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-      <h1 class="page-title" style="margin-bottom: 0;">
-        Student Directory <small id="student-count">(0 students)</small>
-      </h1>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Student Directory</h1>
+        <p class="page-subtitle">Manage all students in the system <span class="badge badge--primary" id="student-count">(0 students)</span></p>
+      </div>
       <a href="add-student.html" class="btn btn--primary" id="btn-add-student">➕ Add Student</a>
     </div>
 
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card__body">
+        <div class="filter-bar" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+          <div class="form-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+            <label for="search-input" class="form-label">Search</label>
+            <input type="text" id="search-input" placeholder="Search by name, roll no." autocomplete="off" aria-label="Search students" style="width: 100%;" />
+          </div>
+          <div class="form-group" style="min-width: 155px; margin-bottom: 0;">
+            <label for="filter-course" class="form-label">Course</label>
+            <select id="filter-course">
+              <option value="">All Courses</option>
+            </select>
+          </div>
+          <div class="form-group" style="min-width: 140px; margin-bottom: 0;">
+            <label for="filter-year" class="form-label">Year</label>
+            <select id="filter-year">
+              <option value="">All Years</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">View</label>
+            <div class="view-toggle">
+              <button type="button" id="btn-table" class="view-toggle__btn active" title="Table view">☰ Table</button>
+              <button type="button" id="btn-cards" class="view-toggle__btn" title="Cards view">▦ Cards</button>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">&nbsp;</label>
+            <button type="button" id="btn-clear-filters" class="btn btn--outline" style="height: 41px;">Clear Filters</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
-      <div class="card__header">
-        <div style="flex: 1; min-width: 220px; max-width: 380px;">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="Search by name, roll no."
-            autocomplete="off"
-            aria-label="Search students"
-          />
-        </div>
-        <div class="view-toggle">
-          <button type="button" id="btn-table" class="active" title="Table view">☰ Table</button>
-          <button type="button" id="btn-cards" title="Cards view">▦ Cards</button>
-        </div>
-      </div>
-
-      <div class="filter-bar">
-        <div class="form-group">
-          <label for="filter-course" class="form-label">Course</label>
-          <select id="filter-course">
-            <option value="">All Courses</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="filter-year" class="form-label">Year</label>
-          <select id="filter-year">
-            <option value="">All Years</option>
-          </select>
-        </div>
-        <button type="button" id="btn-clear-filters" class="btn btn--outline btn--small">Clear Filters</button>
-      </div>
-
-      <!-- Table View Container -->
       <div id="table-view">
         <div class="table-wrapper">
           <table id="students-table">
             <thead>
               <tr>
-                <th class="sortable" data-sort="rollNo" title="Sort by Roll No">Roll No <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-sort="name" title="Sort by Name">Name <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-sort="course" title="Sort by Course">Course <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-sort="dept" title="Sort by Department">Dept <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-sort="pct" title="Sort by Attendance %">Attendance % <span class="sort-icon">↕</span></th>
-                <th style="text-align: right;">Actions</th>
+                <th class="sortable" data-sort="rollNo" title="Sort by Roll No">Roll No</th>
+                <th class="sortable" data-sort="name" title="Sort by Name">Name</th>
+                <th class="sortable" data-sort="course" title="Sort by Course">Course</th>
+                <th class="sortable" data-sort="dept" title="Sort by Department">Dept</th>
+                <th class="sortable" data-sort="pct" title="Sort by Attendance %">Attendance %</th>
+                <th class="text-right">Actions</th>
               </tr>
             </thead>
             <tbody id="students-tbody"></tbody>
@@ -69,16 +70,14 @@
         </div>
       </div>
 
-      <!-- Cards View Container (hidden by default) -->
       <div id="cards-view" style="display: none;">
         <div class="student-cards" id="cards-container"></div>
       </div>
 
-      <!-- Empty State -->
       <div id="empty-state" class="table-empty" style="display: none;">
-        <p style="font-size: 2.2rem; margin-bottom: 0.5rem;">👥</p>
-        <p style="font-weight: 700; font-size: 1.1rem;" id="empty-state-title">No students found</p>
-        <p style="font-size: 0.88rem; color: var(--clr-text-muted);" id="empty-state-desc">Try adjusting your search or filters.</p>
+        <p class="empty-icon">👥</p>
+        <p class="empty-title" id="empty-state-title">No students found</p>
+        <p class="empty-desc" id="empty-state-desc">Try adjusting your search or filters.</p>
       </div>
     </div>
   </div>

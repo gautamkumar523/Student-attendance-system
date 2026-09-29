@@ -8,60 +8,35 @@
   <link rel="stylesheet" href="css/pages.css" />
 </head>
 <body>
-  <!-- Sidebar nav is auto-injected by common.js -->
+  <!-- Nav is auto-injected by common.js -->
   <div class="page">
-    <h1 class="page-title">
-      Dashboard <small id="dashboard-greeting">— Good evening</small>
-    </h1>
-
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-card__value" id="stat-total-students">0</div>
-        <div class="stat-card__label">Total Students</div>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard Overview</h1>
+        <p class="page-subtitle" id="dashboard-greeting">Welcome!</p>
       </div>
-      <div class="stat-card">
-        <div class="stat-card__value" id="stat-today-attendance">0%</div>
-        <div class="stat-card__label">Today's Attendance</div>
-      </div>
-      <div class="stat-card stat-card--danger">
-        <div class="stat-card__value" id="stat-below-threshold">0</div>
-        <div class="stat-card__label">Students Below 75% Attendance</div>
-      </div>
+      <span class="badge badge--primary">📊 Dashboard</span>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions" style="margin-bottom: 1.5rem;">
-      <a href="add-student.html" class="quick-action" id="qa-add-student">
-        <span class="quick-action__icon">➕</span>
-        <span class="quick-action__label">Add Student</span>
-      </a>
-      <a href="attendance.html" class="quick-action">
-        <span class="quick-action__icon">✅</span>
-        <span class="quick-action__label">Mark Attendance</span>
-      </a>
-      <a href="students.html" class="quick-action">
-        <span class="quick-action__icon">👥</span>
-        <span class="quick-action__label">View Students</span>
-      </a>
-      <a href="records.html" class="quick-action">
-        <span class="quick-action__icon">📊</span>
-        <span class="quick-action__label">View Records</span>
-      </a>
-      <a href="settings.html" class="quick-action" id="qa-settings">
-        <span class="quick-action__icon">⚙️</span>
-        <span class="quick-action__label">Settings</span>
-      </a>
+    <!-- Stat Cards -->
+    <div class="stats-grid" id="stats-grid"></div>
+
+    <!-- Middle Row: Gauge (left) + Attendance Trend Graph (right) -->
+    <div class="dashboard-grid">
+      <!-- Left: Overall Attendance Gauge -->
+      <div class="card gauge-card" id="gauge-card"></div>
+      <!-- Right: Daily Attendance Trend Graph -->
+      <div class="card" id="trend-chart-card"></div>
     </div>
 
-    <!-- Recent Activity -->
+    <!-- Full-width: Daily Student Attendance Table -->
+    <div class="card" id="daily-attendance-card"></div>
+
+    <!-- Activity Feed -->
     <div class="card">
-      <div class="card__header">
-        <h2 class="card__title">Recent Activity</h2>
-      </div>
+      <div class="card__header"><h2 class="card__title">Recent Activity</h2></div>
       <ul class="activity-feed" id="activity-feed"></ul>
     </div>
-
   </div>
 
   <script src="js/store.js"></script>

@@ -213,7 +213,7 @@
   function handleSaveThreshold() {
     const rawVal = inpThreshold.value.trim();
     if (rawVal === "") {
-      App.toast("Please enter a threshold percentage.", "warning");
+      App.toast("Please enter a minimum attendance percentage.", "warning");
       return;
     }
 
@@ -224,7 +224,7 @@
     }
 
     Store.setThreshold(val);
-    App.toast("Attendance threshold saved successfully (" + val + "%).", "success");
+    App.toast("Minimum attendance saved successfully (" + val + "%).", "success");
   }
 
   btnSaveThreshold.addEventListener("click", handleSaveThreshold);
@@ -236,11 +236,69 @@
     }
   });
 
+  // ── Appearance / Theme ─────────────────────────────────────────
+  const themeToggleSwitch = document.getElementById("theme-toggle-switch");
+  const themeStatusLabel = document.getElementById("theme-status-label");
+  const btnSetDark = document.getElementById("btn-set-dark");
+  const btnSetLight = document.getElementById("btn-set-light");
+
+  function updateThemeUI(theme) {
+    const isLight = theme === "light";
+    if (themeToggleSwitch) {
+      themeToggleSwitch.checked = isLight;
+    }
+    if (themeStatusLabel) {
+      themeStatusLabel.innerHTML = isLight
+        ? 'Theme: <strong>Light Mode</strong> ☀️'
+        : 'Theme: <strong>Dark Mode</strong> 🌙';
+    }
+    if (btnSetDark && btnSetLight) {
+      if (isLight) {
+        btnSetDark.className = "btn btn--outline btn--small";
+        btnSetLight.className = "btn btn--primary btn--small";
+      } else {
+        btnSetDark.className = "btn btn--primary btn--small";
+        btnSetLight.className = "btn btn--outline btn--small";
+      }
+    }
+  }
+
+  function initThemeControls() {
+    const currentTheme = (App.getTheme ? App.getTheme() : localStorage.getItem("ams_theme")) || "dark";
+    updateThemeUI(currentTheme);
+
+    if (themeToggleSwitch) {
+      themeToggleSwitch.addEventListener("change", function () {
+        const newTheme = this.checked ? "light" : "dark";
+        if (App.setTheme) App.setTheme(newTheme);
+        updateThemeUI(newTheme);
+        App.toast("Switched to " + (newTheme === "light" ? "Light Mode ☀️" : "Dark Mode 🌙"), "info");
+      });
+    }
+
+    if (btnSetDark) {
+      btnSetDark.addEventListener("click", function () {
+        if (App.setTheme) App.setTheme("dark");
+        updateThemeUI("dark");
+        App.toast("Switched to Dark Mode (default) 🌙", "info");
+      });
+    }
+
+    if (btnSetLight) {
+      btnSetLight.addEventListener("click", function () {
+        if (App.setTheme) App.setTheme("light");
+        updateThemeUI("light");
+        App.toast("Switched to Light Mode ☀️", "info");
+      });
+    }
+  }
+
   // ── Initialization ────────────────────────────────────────────
   function init() {
     initTabFromUrl();
     renderClasses();
     initThreshold();
+    initThemeControls();
   }
 
   if (document.readyState === "loading") {

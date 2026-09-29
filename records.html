@@ -8,89 +8,79 @@
   <link rel="stylesheet" href="css/pages.css" />
 </head>
 <body>
-  <!-- Sidebar nav is auto-injected by common.js -->
   <div class="page">
-    <h1 class="page-title">Attendance Records</h1>
-
-    <!-- Filters Section -->
-    <div class="card">
-      <div class="filter-bar" style="margin-bottom: 0;">
-        <div class="form-group">
-          <label for="filter-from" class="form-label">Date From</label>
-          <input type="date" id="filter-from" />
-        </div>
-        <div class="form-group">
-          <label for="filter-to" class="form-label">Date To</label>
-          <input type="date" id="filter-to" />
-        </div>
-        <div class="form-group">
-          <label for="filter-student" class="form-label">Student Search</label>
-          <input type="text" id="filter-student" placeholder="Student name or ID" />
-        </div>
-        <div class="form-group">
-          <label for="filter-status" class="form-label">Status</label>
-          <select id="filter-status">
-            <option value="">All</option>
-            <option value="Present">Present</option>
-            <option value="Absent">Absent</option>
-            <option value="Late">Late</option>
-            <option value="Leave">Leave</option>
-          </select>
-        </div>
-        <button type="button" id="btn-filter" class="btn btn--primary">Apply Filters</button>
-        <button type="button" id="btn-clear" class="btn btn--outline">Clear</button>
-        <button type="button" id="btn-export" class="btn btn--success">Export CSV</button>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Attendance Records</h1>
+        <p class="page-subtitle">View and export attendance history</p>
       </div>
     </div>
 
-    <!-- Summary Row -->
-    <div id="summary-row" class="stats-grid" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
-      <div class="stat-card">
-        <div class="stat-card__value" id="summary-total">0</div>
-        <div class="stat-card__label">Total Records</div>
+    <!-- Filters -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card__header">
+        <h2 class="card__title">Filters</h2>
+        <span id="record-count" style="font-size:0.82rem;color:var(--clr-text-muted);"></span>
       </div>
-      <div class="stat-card stat-card--success">
-        <div class="stat-card__value" id="summary-present">0%</div>
-        <div class="stat-card__label">Present (0)</div>
-      </div>
-      <div class="stat-card stat-card--danger">
-        <div class="stat-card__value" id="summary-absent">0%</div>
-        <div class="stat-card__label">Absent (0)</div>
-      </div>
-      <div class="stat-card stat-card--warning">
-        <div class="stat-card__value" id="summary-late">0%</div>
-        <div class="stat-card__label">Late (0)</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__value" id="summary-leave" style="color: var(--clr-leave);">0%</div>
-        <div class="stat-card__label">Leave (0)</div>
+      <div class="card__body">
+        <div class="records-filters">
+          <div class="form-group">
+            <label for="filter-from">Date From</label>
+            <input type="date" id="filter-from" />
+          </div>
+          <div class="form-group">
+            <label for="filter-to">Date To</label>
+            <input type="date" id="filter-to" />
+          </div>
+          <div class="form-group" style="flex:1;min-width:180px;">
+            <label for="filter-student">Search Student</label>
+            <input type="text" id="filter-student" placeholder="Name, roll no, or ID" />
+          </div>
+          <div class="form-group">
+            <label for="filter-status">Status</label>
+            <select id="filter-status">
+              <option value="">All</option>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="Late">Late</option>
+              <option value="Leave">Leave</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex;gap:8px;align-items:end;">
+            <button type="button" class="btn btn--primary btn--small" id="btn-filter">🔍 Filter</button>
+            <button type="button" class="btn btn--outline btn--small" id="btn-clear">Clear</button>
+            <button type="button" class="btn btn--outline btn--small" id="btn-export">📥 Export CSV</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Table Section -->
+    <!-- Summary -->
+    <div id="summary-row" class="stats-grid"></div>
+
+    <!-- Table -->
     <div class="card">
       <div class="card__header">
         <h2 class="card__title">Attendance History</h2>
-        <span id="record-count" style="font-size: 0.85rem; color: var(--clr-text-muted); font-weight: 500;"></span>
       </div>
       <div class="table-wrapper">
         <table id="records-table">
           <thead>
             <tr>
-              <th class="sortable" data-col="date">Date <span class="sort-icon"></span></th>
-              <th class="sortable" data-col="time">Time <span class="sort-icon"></span></th>
-              <th class="sortable" data-col="student">Student <span class="sort-icon"></span></th>
-              <th class="sortable" data-col="rollNo">Roll No <span class="sort-icon"></span></th>
-              <th class="sortable" data-col="status">Status <span class="sort-icon"></span></th>
-              <th class="sortable" data-col="remarks">Remarks <span class="sort-icon"></span></th>
+              <th class="sortable" data-col="date" style="cursor:pointer;">Date <span class="sort-icon"></span></th>
+              <th class="sortable" data-col="time" style="cursor:pointer;">Time <span class="sort-icon"></span></th>
+              <th class="sortable" data-col="student" style="cursor:pointer;">Student <span class="sort-icon"></span></th>
+              <th class="sortable" data-col="rollNo" style="cursor:pointer;">Roll No <span class="sort-icon"></span></th>
+              <th class="sortable" data-col="status" style="cursor:pointer;">Status <span class="sort-icon"></span></th>
+              <th class="sortable" data-col="remarks" style="cursor:pointer;">Remarks <span class="sort-icon"></span></th>
             </tr>
           </thead>
-          <tbody id="records-body">
-          </tbody>
+          <tbody id="records-body"></tbody>
         </table>
       </div>
     </div>
   </div>
+
   <script src="js/store.js"></script>
   <script src="js/common.js"></script>
   <script src="js/records.js"></script>

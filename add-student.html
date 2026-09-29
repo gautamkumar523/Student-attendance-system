@@ -8,49 +8,63 @@
   <link rel="stylesheet" href="css/pages.css" />
 </head>
 <body>
-  <!-- Sidebar nav is auto-injected by common.js -->
   <div class="page">
-    <h1 class="page-title" id="page-heading">Add Student</h1>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title" id="page-heading">Add New Student</h1>
+        <p class="page-subtitle">Enter student details</p>
+      </div>
+    </div>
 
     <div class="card">
       <div class="accordion" id="student-accordion">
 
-        <!-- Panel 1: Basic Details -->
         <div class="accordion__item accordion__item--open" id="panel-basic">
           <div class="accordion__header">
-            <span>Basic Details</span>
-            <span class="accordion__chevron">▼</span>
+            <h2 class="card__title">Personal Info</h2>
           </div>
           <div class="accordion__body">
             <div class="accordion__content">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="inp-id">Student ID / Roll Number <span class="required">*</span></label>
-                  <input type="text" id="inp-id" placeholder="e.g. STU101" required />
-                  <span class="error-text" id="err-id" style="display: none;"></span>
-                </div>
-                <div class="form-group">
-                  <label for="inp-name">Full Name <span class="required">*</span></label>
-                  <input type="text" id="inp-name" placeholder="e.g. Jane Doe" required />
-                  <span class="error-text" id="err-name" style="display: none;"></span>
-                </div>
-                <div class="form-group">
-                  <label for="inp-dob">Date of Birth</label>
-                  <input type="date" id="inp-dob" />
-                </div>
-                <div class="form-group">
-                  <span class="form-label">Gender</span>
-                  <div class="radio-group">
-                    <label><input type="radio" name="gender" value="Male" /> Male</label>
-                    <label><input type="radio" name="gender" value="Female" /> Female</label>
-                    <label><input type="radio" name="gender" value="Other" /> Other</label>
+              <div class="student-form-top" style="display: flex; gap: 2rem; align-items: flex-start;">
+                <div class="form-group" style="flex: 0 0 auto;">
+                  <label class="form-label">Profile Photo</label>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <img src="assets/default-avatar.svg" alt="Profile Preview" class="photo-preview" id="photo-preview"
+                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid var(--clr-border-strong); background: var(--clr-bg-alt);" />
+                    <label for="inp-photo" class="btn btn--outline btn--small" style="cursor: pointer;">
+                      📷 Choose Image
+                    </label>
+                    <input type="file" id="inp-photo" accept="image/*" style="display: none;" />
                   </div>
                 </div>
-                <div class="form-group form-group--full">
-                  <label class="form-label" for="inp-photo">Profile Photo</label>
-                  <div class="photo-upload">
-                    <img src="assets/default-avatar.svg" alt="Profile Preview" class="photo-preview" id="photo-preview" />
-                    <input type="file" id="inp-photo" accept="image/*" />
+                <div class="form-grid" style="flex: 1;">
+                  <div class="form-group">
+                    <label for="inp-id">Student ID / Roll Number <span class="required">*</span></label>
+                    <input type="text" id="inp-id" placeholder="e.g. STU101" required />
+                    <span class="error-text hidden" id="err-id"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="inp-name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="inp-name" placeholder="e.g. Jane Doe" required />
+                    <span class="error-text hidden" id="err-name"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="inp-dob">Date of Birth</label>
+                    <input type="date" id="inp-dob" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <div style="display: flex; gap: 16px; align-items: center; padding-top: 8px;">
+                      <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-text); font-weight: normal;">
+                        <input type="radio" name="gender" value="Male" style="accent-color: var(--clr-primary);" /> Male
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-text); font-weight: normal;">
+                        <input type="radio" name="gender" value="Female" style="accent-color: var(--clr-primary);" /> Female
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--clr-text); font-weight: normal;">
+                        <input type="radio" name="gender" value="Other" style="accent-color: var(--clr-primary);" /> Other
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -58,11 +72,9 @@
           </div>
         </div>
 
-        <!-- Panel 2: Academic Details -->
         <div class="accordion__item" id="panel-academic">
           <div class="accordion__header">
-            <span>Academic Details</span>
-            <span class="accordion__chevron">▼</span>
+            <h2 class="card__title">Academic Info</h2>
           </div>
           <div class="accordion__body">
             <div class="accordion__content">
@@ -100,11 +112,9 @@
           </div>
         </div>
 
-        <!-- Panel 3: Contact Details -->
         <div class="accordion__item" id="panel-contact">
           <div class="accordion__header">
-            <span>Contact Details</span>
-            <span class="accordion__chevron">▼</span>
+            <h2 class="card__title">Contact Info</h2>
           </div>
           <div class="accordion__body">
             <div class="accordion__content">
@@ -134,11 +144,9 @@
           </div>
         </div>
 
-        <!-- Panel 4: Parent/Guardian Details -->
         <div class="accordion__item" id="panel-parent">
           <div class="accordion__header">
-            <span>Parent/Guardian Details</span>
-            <span class="accordion__chevron">▼</span>
+            <h2 class="card__title">Parent/Guardian Info</h2>
           </div>
           <div class="accordion__body">
             <div class="accordion__content">
@@ -164,20 +172,16 @@
           </div>
         </div>
 
-        <!-- Panel 5: Review & Submit -->
         <div class="accordion__item" id="panel-review">
           <div class="accordion__header">
-            <span>Review &amp; Submit</span>
-            <span class="accordion__chevron">▼</span>
+            <h2 class="card__title">Review &amp; Submit</h2>
           </div>
           <div class="accordion__body">
             <div class="accordion__content">
-              <div id="review-summary">
-                <!-- JS will render formatted summary of filled fields -->
-              </div>
+              <div id="review-summary"></div>
               <div class="btn-row">
                 <button type="button" class="btn btn--success" id="save-btn">Save Student</button>
-                <button type="button" class="btn btn--outline" id="reset-btn">Reset</button>
+                <button type="button" class="btn btn--outline" id="reset-btn">Cancel</button>
               </div>
             </div>
           </div>

@@ -181,8 +181,11 @@
 
     // Empty State Check
     if (list.length === 0) {
+      tableView.classList.add("hidden");
       tableView.style.display = "none";
+      cardsView.classList.add("hidden");
       cardsView.style.display = "none";
+      emptyState.classList.remove("hidden");
       emptyState.style.display = "block";
 
       if (allCount === 0) {
@@ -203,12 +206,17 @@
     }
 
     // Results exist: Hide empty state, show active view
+    emptyState.classList.add("hidden");
     emptyState.style.display = "none";
     if (currentView === "table") {
+      tableView.classList.remove("hidden");
       tableView.style.display = "block";
+      cardsView.classList.add("hidden");
       cardsView.style.display = "none";
     } else {
+      tableView.classList.add("hidden");
       tableView.style.display = "none";
+      cardsView.classList.remove("hidden");
       cardsView.style.display = "block";
     }
 
@@ -216,15 +224,16 @@
     let tableHtml = "";
     list.forEach((student) => {
       const stats = Store.getStudentStats(student.id);
-      const belowThreshold = stats.pct !== null && stats.pct < threshold;
+      const belowThreshold = stats.pct !== null && stats.pct < 75;
       const rowClass = belowThreshold ? "row--danger" : "";
+      const inlineStyle = belowThreshold ? 'style="background: rgba(239,68,68,0.08); border-left: 3px solid var(--clr-danger);"' : "";
       const rollNo = getRollNo(student);
       const pctBadgeCls = App.pctBadgeClass(stats.pct);
       const pctText = stats.pct !== null ? Math.round(stats.pct) + "%" : "—";
       const badgeStyle = stats.pct === null ? 'style="background:#e9ecef;color:#6c757d;"' : "";
 
       tableHtml += `
-        <tr class="${rowClass}">
+        <tr class="${rowClass}" ${inlineStyle}>
           <td><strong>${App.esc(rollNo)}</strong></td>
           <td>
             <a href="student-profile.html?id=${encodeURIComponent(student.id)}" class="student-name-link" style="font-weight: 600; color: var(--clr-primary);" title="View student profile">
@@ -253,8 +262,9 @@
     let cardsHtml = "";
     list.forEach((student) => {
       const stats = Store.getStudentStats(student.id);
-      const belowThreshold = stats.pct !== null && stats.pct < threshold;
+      const belowThreshold = stats.pct !== null && stats.pct < 75;
       const rowClass = belowThreshold ? "row--danger" : "";
+      const inlineStyle = belowThreshold ? 'style="background: rgba(239,68,68,0.08); border-left: 3px solid var(--clr-danger);"' : "";
       const rollNo = getRollNo(student);
       const pctBadgeCls = App.pctBadgeClass(stats.pct);
       const pctText = stats.pct !== null ? Math.round(stats.pct) + "% Attendance" : "No attendance data";
@@ -262,7 +272,7 @@
       const avatarSrc = student.photo ? student.photo : "assets/default-avatar.svg";
 
       cardsHtml += `
-        <div class="student-card ${rowClass}" data-id="${App.esc(student.id)}">
+        <div class="student-card ${rowClass}" data-id="${App.esc(student.id)}" ${inlineStyle}>
           <img
             src="${App.esc(avatarSrc)}"
             alt="${App.esc(student.name || "Student")}"

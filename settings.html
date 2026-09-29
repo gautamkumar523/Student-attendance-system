@@ -8,57 +8,95 @@
   <link rel="stylesheet" href="css/pages.css" />
 </head>
 <body>
-  <!-- Sidebar nav is auto-injected by common.js -->
   <div class="page">
-    <h1 class="page-title">Settings</h1>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Manage system configuration</p>
+      </div>
+    </div>
 
     <div class="card">
-      <div class="tabs" role="tablist">
+      <div class="tabs" role="tablist" style="padding:0 20px;">
         <button type="button" class="tab-btn tab-btn--active" data-tab="tab-classes" role="tab">Classes</button>
-        <button type="button" class="tab-btn" data-tab="tab-threshold" role="tab">Threshold</button>
+        <button type="button" class="tab-btn" data-tab="tab-threshold" role="tab">Minimum Attendance</button>
+        <button type="button" class="tab-btn" data-tab="tab-appearance" role="tab">Appearance</button>
       </div>
 
-      <!-- Tab: Classes -->
+      <!-- Classes Tab -->
       <div class="tab-panel tab-panel--active" id="tab-classes" role="tabpanel">
-        <div class="filter-bar">
-          <div class="form-group">
-            <label for="cls-course">Course</label>
-            <input type="text" id="cls-course" placeholder="e.g. B.Tech CS" autocomplete="off" />
+        <div class="card__body">
+          <div style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin-bottom:24px;">
+            <div class="form-group" style="flex:1;min-width:180px;margin-bottom:0;">
+              <label for="cls-course">Course</label>
+              <input type="text" id="cls-course" placeholder="e.g. BCA, BBA, MBA" autocomplete="off" />
+            </div>
+            <div class="form-group" style="flex:1;min-width:180px;margin-bottom:0;">
+              <label for="cls-semester">Year</label>
+              <input type="text" id="cls-semester" placeholder="e.g. 1st Year, 2nd Year" autocomplete="off" />
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn btn--primary" id="btn-add-cls">➕ Add Class</button>
+              <button type="button" class="btn btn--outline hidden" id="btn-cancel-cls">Cancel</button>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="cls-semester">Year</label>
-            <input type="text" id="cls-semester" placeholder="e.g. 2nd Year" autocomplete="off" />
-          </div>
-          <button type="button" class="btn btn--primary" id="btn-add-cls">Add Class</button>
-          <button type="button" class="btn btn--outline" id="btn-cancel-cls" style="display: none;">Cancel</button>
-        </div>
 
-        <div class="table-wrapper">
-          <table id="classes-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Course</th>
-                <th>Year</th>
-                <th style="width: 170px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="classes-tbody"></tbody>
-          </table>
+          <div class="table-wrapper">
+            <table id="classes-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Course</th>
+                  <th>Year</th>
+                  <th style="width:120px;text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="classes-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- Tab 4: Threshold -->
+      <!-- Minimum Attendance Tab -->
       <div class="tab-panel" id="tab-threshold" role="tabpanel">
-        <div style="max-width: 440px; padding: 0.5rem 0;">
-          <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label for="inp-threshold">Minimum Attendance Percentage</label>
-            <input type="number" id="inp-threshold" min="0" max="100" />
-            <p style="font-size: 0.85rem; color: var(--clr-text-muted); margin-top: 0.35rem;">
-              Students below this percentage will be highlighted in red across the system.
+        <div class="card__body" style="max-width:480px;">
+          <div class="form-group">
+            <label for="inp-threshold">Minimum Attendance Percentage (%)</label>
+            <input type="number" id="inp-threshold" min="0" max="100" style="max-width:200px;" />
+            <p style="font-size:0.82rem;color:var(--clr-text-muted);margin-top:6px;">
+              Students whose attendance falls below this percentage will be flagged with a warning and highlighted across the dashboard and directory.
             </p>
           </div>
-          <button type="button" class="btn btn--primary" id="btn-save-threshold">Save</button>
+          <button type="button" class="btn btn--primary" id="btn-save-threshold">💾 Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Appearance Tab -->
+      <div class="tab-panel" id="tab-appearance" role="tabpanel">
+        <div class="card__body" style="max-width:540px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px;background:var(--clr-bg-alt);border:1px solid var(--clr-border-strong);border-radius:var(--radius);margin-bottom:20px;">
+            <div>
+              <div style="font-weight:600;font-size:1rem;margin-bottom:4px;" id="theme-status-label">Theme: <strong>Dark Mode</strong> 🌙</div>
+              <div style="font-size:0.84rem;color:var(--clr-text-muted);">Toggle between dark mode (default) and light mode</div>
+            </div>
+            
+            <label class="switch-toggle" for="theme-toggle-switch" title="Toggle Light/Dark Mode">
+              <input type="checkbox" id="theme-toggle-switch" />
+              <span class="switch-slider">
+                <span class="switch-icon">🌙</span>
+                <span class="switch-icon">☀️</span>
+              </span>
+            </label>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button type="button" class="btn btn--primary btn--small" id="btn-set-dark">
+              🌙 Dark Mode (Default)
+            </button>
+            <button type="button" class="btn btn--outline btn--small" id="btn-set-light">
+              ☀️ Light Mode
+            </button>
+          </div>
         </div>
       </div>
     </div>

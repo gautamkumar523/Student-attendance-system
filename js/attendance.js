@@ -85,6 +85,12 @@
       attDateInput.value = App.todayISO();
     }
 
+    // 1b. Auto-set time to current time (hidden field)
+    var timeInput = document.getElementById("attendance-time");
+    if (timeInput && !timeInput.value) {
+      timeInput.value = App.nowTime();
+    }
+
     // 2. Populate Classes
     const classes = Store.getClasses().map((c) => ({
       id: c.id,

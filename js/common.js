@@ -1,14 +1,11 @@
 /* ============================================================
-   common.js — Shared UI Utilities
-   Nav renderer, auth guard, role-based nav, toast, modal,
-   date/time helpers, escaping.
+   common.js — Shared UI: Sidebar nav, auth guard, utilities
    ============================================================ */
 
 const App = (function () {
   "use strict";
 
   // ── Page Access Rules ─────────────────────────────────────────
-  // Maps page filenames to allowed roles. Pages not listed are open.
   const PAGE_ROLES = {
     "index.html":           ["admin", "teacher", "student"],
     "add-student.html":     ["admin"],
@@ -29,34 +26,51 @@ const App = (function () {
     { href: "settings.html",    icon: "⚙️", label: "Settings",       roles: ["admin"] },
   ];
 
+  // ── Theme Management (Default: dark) ──────────────────────────
+  function getTheme() {
+    return localStorage.getItem("ams_theme") || "dark";
+  }
+
+  function applyTheme(theme) {
+    const validTheme = theme === "light" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", validTheme);
+    document.documentElement.style.colorScheme = validTheme;
+    localStorage.setItem("ams_theme", validTheme);
+    window.dispatchEvent(new CustomEvent("ams-theme-change", { detail: { theme: validTheme } }));
+  }
+
+  function setTheme(theme) {
+    applyTheme(theme);
+  }
+
+  function toggleTheme() {
+    const next = getTheme() === "light" ? "dark" : "light";
+    applyTheme(next);
+    return next;
+  }
+
+  // Initialize theme on script execution
+  applyTheme(getTheme());
+
   // ── Auth Guard ────────────────────────────────────────────────
   function checkAuth() {
     var currentPage = window.location.pathname.split("/").pop() || "index.html";
-
-    // Login page doesn't need guard
     if (currentPage === "login.html") return true;
-
-    // Must be authenticated
     if (!Store.isAuthenticated()) {
       window.location.href = "login.html";
       return false;
     }
-
-    // Check role access
     var session = Store.getSession();
     var allowedRoles = PAGE_ROLES[currentPage];
     if (allowedRoles && allowedRoles.indexOf(session.role) === -1) {
-      // Redirect to dashboard with access denied
       window.location.href = "index.html";
       return false;
     }
-
     return true;
   }
 
-  // ── Navigation ────────────────────────────────────────────────
+  // ── Navigation Renderer ───────────────────────────────────────
   function renderNav() {
-    // Run auth guard first
     if (!checkAuth()) return;
 
     var session = Store.getSession();
@@ -64,59 +78,50 @@ const App = (function () {
 
     var role = session.role;
     var currentPage = window.location.pathname.split("/").pop() || "index.html";
+    var roleLabels = { admin: "Admin", teacher: "Teacher", student: "Student" };
 
-    // Sidebar
+    // ── Build Sidebar ───────────────────────────────────────────
     var sidebar = document.createElement("aside");
     sidebar.className = "sidebar";
     sidebar.id = "sidebar";
 
-    var roleBadge = {
-      admin: "🛡️ Admin",
-      teacher: "👨‍🏫 Teacher",
-      student: "🎓 Student",
-    };
+    var html = "";
 
-    var navHTML =
-      '<div class="sidebar__brand">' +
-        '<span class="sidebar__logo">📋</span>' +
-        '<span class="sidebar__title">AttendTrack</span>' +
-      '</div>' +
-      '<nav class="sidebar__nav">';
+    // Brand
+    html += '<div class="sidebar__brand">' +
+      '<div class="sidebar__logo">📋</div>' +
+      '<span class="sidebar__title">AttendTrack</span>' +
+    '</div>';
 
+    // Nav links
+    html += '<nav class="sidebar__nav">';
     NAV_ITEMS.forEach(function (item) {
-      // Only show nav items the user's role has access to
       if (item.roles.indexOf(role) === -1) return;
-
-      var active = currentPage === item.href ? "sidebar__link--active" : "";
-      navHTML +=
-        '<a href="' + item.href + '" class="sidebar__link ' + active + '">' +
-          '<span class="sidebar__icon">' + item.icon + '</span>' +
-          '<span class="sidebar__label">' + item.label + '</span>' +
-        '</a>';
+      var active = currentPage === item.href ? " sidebar__link--active" : "";
+      html += '<a href="' + item.href + '" class="sidebar__link' + active + '">' +
+        '<span class="sidebar__icon">' + item.icon + '</span>' +
+        '<span>' + item.label + '</span>' +
+      '</a>';
     });
+    html += '</nav>';
 
-    navHTML += '</nav>';
+    // User section
+    html += '<div class="sidebar__user">' +
+      '<div class="sidebar__user-avatar">' + esc(session.name.charAt(0).toUpperCase()) + '</div>' +
+      '<div class="sidebar__user-info">' +
+        '<div class="sidebar__user-name">' + esc(session.name) + '</div>' +
+        '<div class="sidebar__user-role">' + (roleLabels[role] || role) + '</div>' +
+      '</div>' +
+      '<button class="sidebar__logout" id="btn-logout" title="Sign out">⏻</button>' +
+    '</div>';
 
-    // User profile section at bottom of sidebar
-    navHTML +=
-      '<div class="sidebar__user">' +
-        '<div class="sidebar__user-info">' +
-          '<div class="sidebar__user-avatar">' + esc(session.name.charAt(0).toUpperCase()) + '</div>' +
-          '<div class="sidebar__user-details">' +
-            '<div class="sidebar__user-name">' + esc(session.name) + '</div>' +
-            '<div class="sidebar__user-role">' + (roleBadge[role] || role) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<button class="sidebar__logout" id="btn-logout" title="Sign out">⏻</button>' +
-      '</div>';
+    sidebar.innerHTML = html;
 
-    sidebar.innerHTML = navHTML;
-
-    // Top bar (mobile)
+    // ── Mobile Topbar ───────────────────────────────────────────
     var topbar = document.createElement("header");
     topbar.className = "topbar";
     topbar.innerHTML =
-      '<button class="topbar__hamburger" id="hamburger" aria-label="Toggle navigation">' +
+      '<button class="topbar__hamburger" id="hamburger" aria-label="Menu">' +
         '<span></span><span></span><span></span>' +
       '</button>' +
       '<span class="topbar__title">📋 AttendTrack</span>' +
@@ -127,13 +132,13 @@ const App = (function () {
     overlay.className = "sidebar-overlay";
     overlay.id = "sidebar-overlay";
 
+    // Insert into DOM
     document.body.prepend(overlay);
     document.body.prepend(sidebar);
     document.body.prepend(topbar);
 
-    // Hamburger toggle
-    var hamburger = document.getElementById("hamburger");
-    hamburger.addEventListener("click", function () {
+    // ── Event Listeners ─────────────────────────────────────────
+    document.getElementById("hamburger").addEventListener("click", function () {
       sidebar.classList.toggle("sidebar--open");
       overlay.classList.toggle("sidebar-overlay--visible");
     });
@@ -142,11 +147,20 @@ const App = (function () {
       overlay.classList.remove("sidebar-overlay--visible");
     });
 
-    // Logout buttons
+    sidebar.querySelectorAll(".sidebar__link").forEach(function (link) {
+      link.addEventListener("click", function () {
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove("sidebar--open");
+          overlay.classList.remove("sidebar-overlay--visible");
+        }
+      });
+    });
+
+    // Logout
     document.getElementById("btn-logout").addEventListener("click", handleLogout);
     document.getElementById("btn-logout-mobile").addEventListener("click", handleLogout);
 
-    // Auth passed, nav rendered — reveal the page
+    // Reveal the page (prevents auth flash)
     document.body.classList.add("body--ready");
   }
 
@@ -157,19 +171,13 @@ const App = (function () {
 
   // ── Role helpers ──────────────────────────────────────────────
   function requireRole(roles) {
-    var session = Store.getSession();
-    if (!session) return false;
+    var s = Store.getSession();
+    if (!s) return false;
     if (typeof roles === "string") roles = [roles];
-    return roles.indexOf(session.role) !== -1;
+    return roles.indexOf(s.role) !== -1;
   }
-
-  function getRole() {
-    return Store.getCurrentRole();
-  }
-
-  function getSessionUser() {
-    return Store.getSession();
-  }
+  function getRole() { return Store.getCurrentRole(); }
+  function getSessionUser() { return Store.getSession(); }
 
   // ── Toast ─────────────────────────────────────────────────────
   function toast(msg, type) {
@@ -190,7 +198,6 @@ const App = (function () {
   function confirm(msg, onConfirm, onCancel) {
     var backdrop = document.createElement("div");
     backdrop.className = "modal-backdrop";
-
     backdrop.innerHTML =
       '<div class="modal">' +
         '<p class="modal__msg">' + esc(msg) + '</p>' +
@@ -199,149 +206,102 @@ const App = (function () {
           '<button class="btn btn--outline modal__no">Cancel</button>' +
         '</div>' +
       '</div>';
-
     document.body.appendChild(backdrop);
     requestAnimationFrame(function () { backdrop.classList.add("modal-backdrop--visible"); });
-
     backdrop.querySelector(".modal__yes").addEventListener("click", function () {
-      doClose();
-      if (onConfirm) onConfirm();
+      doClose(); if (onConfirm) onConfirm();
     });
     backdrop.querySelector(".modal__no").addEventListener("click", function () {
-      doClose();
-      if (onCancel) onCancel();
+      doClose(); if (onCancel) onCancel();
     });
     backdrop.addEventListener("click", function (e) {
-      if (e.target === backdrop) {
-        doClose();
-        if (onCancel) onCancel();
-      }
+      if (e.target === backdrop) { doClose(); if (onCancel) onCancel(); }
     });
-
     function doClose() {
       backdrop.classList.remove("modal-backdrop--visible");
-      setTimeout(function () { backdrop.remove(); }, 250);
+      setTimeout(function () { backdrop.remove(); }, 200);
     }
   }
 
   // ── Utility helpers ───────────────────────────────────────────
   function esc(str) {
+    if (str == null) return "";
     var el = document.createElement("span");
-    el.textContent = str;
+    el.textContent = String(str);
     return el.innerHTML;
   }
-
   function formatDate(iso) {
     if (!iso) return "—";
-    var parts = iso.split("-");
-    var months = [
-      "Jan","Feb","Mar","Apr","May","Jun",
-      "Jul","Aug","Sep","Oct","Nov","Dec",
-    ];
-    return parseInt(parts[2], 10) + " " + months[parseInt(parts[1], 10) - 1] + " " + parts[0];
+    var p = iso.split("-");
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return parseInt(p[2], 10) + " " + months[parseInt(p[1], 10) - 1] + " " + p[0];
   }
-
-  function formatTime(timeStr) {
-    if (!timeStr) return "—";
-    var parts = timeStr.split(":");
-    var hr = parseInt(parts[0], 10);
-    var ampm = hr >= 12 ? "PM" : "AM";
-    var h12 = hr % 12 || 12;
-    return h12 + ":" + parts[1] + " " + ampm;
+  function formatTime(t) {
+    if (!t) return "—";
+    var p = t.split(":"); var hr = parseInt(p[0], 10);
+    return (hr % 12 || 12) + ":" + p[1] + " " + (hr >= 12 ? "PM" : "AM");
   }
-
-  function todayISO() {
-    return new Date().toISOString().split("T")[0];
-  }
-
+  function todayISO() { return new Date().toISOString().split("T")[0]; }
   function nowTime() {
     var d = new Date();
     return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   }
-
-  function getUrlParam(name) {
-    return new URLSearchParams(window.location.search).get(name);
+  function getUrlParam(n) { return new URLSearchParams(window.location.search).get(n); }
+  function properCase(s) {
+    if (!s) return "";
+    return s.replace(/\b(\w+)/g, function (m) { return m.charAt(0).toUpperCase() + m.slice(1).toLowerCase(); });
   }
-
-  function properCase(str) {
-    if (!str) return "";
-    return str.replace(/\b(\w+)/g, function (m) {
-      return m.charAt(0).toUpperCase() + m.slice(1).toLowerCase();
-    });
+  function getMonthRange(ym) {
+    if (!ym) return null;
+    var p = ym.split("-");
+    var last = new Date(parseInt(p[0]), parseInt(p[1]), 0).getDate();
+    return { start: ym + "-01", end: ym + "-" + String(last).padStart(2, "0") };
   }
-
-  function getMonthRange(yearMonth) {
-    if (!yearMonth) return null;
-    var parts = yearMonth.split("-");
-    var start = yearMonth + "-01";
-    var lastDay = new Date(parseInt(parts[0]), parseInt(parts[1]), 0).getDate();
-    var end = yearMonth + "-" + String(lastDay).padStart(2, "0");
-    return { start: start, end: end };
-  }
-
-  function formatMonth(yearMonth) {
-    if (!yearMonth) return "—";
-    var parts = yearMonth.split("-");
+  function formatMonth(ym) {
+    if (!ym) return "—";
+    var p = ym.split("-");
     var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-    return months[parseInt(parts[1], 10) - 1] + " " + parts[0];
+    return months[parseInt(p[1], 10) - 1] + " " + p[0];
   }
-
   function pctBadgeClass(pct) {
     if (pct === null || pct === undefined) return "";
     if (pct >= 75) return "pct-badge--good";
     if (pct >= 50) return "pct-badge--warn";
     return "pct-badge--danger";
   }
-
   function statusPillHTML(status) {
     var cls = {
-      Present: "status-pill--present",
-      Absent: "status-pill--absent",
-      Late: "status-pill--late",
-      Leave: "status-pill--leave",
+      Present: "status-pill--present", Absent: "status-pill--absent",
+      Late: "status-pill--late", Leave: "status-pill--leave",
     };
     return '<span class="status-pill ' + (cls[status] || "") + '">' + esc(status) + "</span>";
   }
-
-  function populateSelect(selectEl, items, valueKey, labelKey, placeholder) {
-    selectEl.innerHTML = "";
+  function populateSelect(sel, items, vKey, lKey, placeholder) {
+    sel.innerHTML = "";
     if (placeholder) {
-      var opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = placeholder;
-      selectEl.appendChild(opt);
+      var o = document.createElement("option");
+      o.value = ""; o.textContent = placeholder; sel.appendChild(o);
     }
     items.forEach(function (item) {
-      var opt = document.createElement("option");
-      opt.value = item[valueKey];
-      opt.textContent = item[labelKey];
-      selectEl.appendChild(opt);
+      var o = document.createElement("option");
+      o.value = item[vKey]; o.textContent = item[lKey]; sel.appendChild(o);
     });
   }
 
-  // ── Init on every page ────────────────────────────────────────
+  // ── Init ──────────────────────────────────────────────────────
   document.addEventListener("DOMContentLoaded", renderNav);
 
   // ── Public API ────────────────────────────────────────────────
   return {
-    toast: toast,
-    confirm: confirm,
-    esc: esc,
-    formatDate: formatDate,
-    formatTime: formatTime,
-    todayISO: todayISO,
-    nowTime: nowTime,
-    getUrlParam: getUrlParam,
-    pctBadgeClass: pctBadgeClass,
-    statusPillHTML: statusPillHTML,
+    toast: toast, confirm: confirm, esc: esc,
+    formatDate: formatDate, formatTime: formatTime,
+    todayISO: todayISO, nowTime: nowTime,
+    getUrlParam: getUrlParam, properCase: properCase,
+    getMonthRange: getMonthRange, formatMonth: formatMonth,
+    pctBadgeClass: pctBadgeClass, statusPillHTML: statusPillHTML,
     populateSelect: populateSelect,
-    properCase: properCase,
-    getMonthRange: getMonthRange,
-    formatMonth: formatMonth,
-    // Auth helpers
-    requireRole: requireRole,
-    getRole: getRole,
-    getSessionUser: getSessionUser,
-    handleLogout: handleLogout,
+    requireRole: requireRole, getRole: getRole,
+    getSessionUser: getSessionUser, handleLogout: handleLogout,
+    getTheme: getTheme, setTheme: setTheme, toggleTheme: toggleTheme,
   };
 })();
