@@ -145,6 +145,9 @@ const App = (function () {
     // Logout buttons
     document.getElementById("btn-logout").addEventListener("click", handleLogout);
     document.getElementById("btn-logout-mobile").addEventListener("click", handleLogout);
+
+    // Auth passed, nav rendered — reveal the page
+    document.body.classList.add("body--ready");
   }
 
   function handleLogout() {

@@ -71,6 +71,11 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  opacity: 0;
+  transition: opacity 0.15s ease-in;
+}
+body.body--ready {
+  opacity: 1;
 }
 
 a { color: var(--clr-primary); text-decoration: none; transition: color var(--transition); }
